@@ -129,4 +129,6 @@ nb-configuration.xml
 
 #personalizados
 /app/Config/Database.php
-
+/app/Config/App.php
+/public/.htaccess
+.htaccess
