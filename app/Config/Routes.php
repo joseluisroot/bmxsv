@@ -8,3 +8,6 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 $routes->get('atletas/(:segment)', 'Atletas::perfil/$1');
 
+$routes->get('migracion', 'Migrations::index');
+
+
