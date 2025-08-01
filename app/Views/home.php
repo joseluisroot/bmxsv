@@ -75,8 +75,8 @@
         <h2 class="text-4xl font-display mb-6 text-center">Atletas</h2>
         <div class="grid md:grid-cols-3 gap-6 text-center">
             <?php foreach ($atletas as $atleta): ?>
-                <a href="<?= base_url('atletas/' . esc($atleta['slug'])) ?>" class="bg-gray-100 p-4 rounded shadow block hover:shadow-lg transition">
-                    <img src="https://via.placeholder.com/150" alt="<?= esc($atleta['nombres']) ?>" class="mx-auto mb-3 rounded-full">
+                <a href="<?= base_url('atletas/' . esc($atleta['slug'])) ?>" class="bg-gray-100 p-4 rounded shadow block hover:shadow-lg transition" >
+                    <img src="<?= base_url('/uploads/' . $atleta['foto'] . '.png') ?>" alt="<?= esc($atleta['nombres']) ?>" class="mx-auto mb-3 rounded-full" style="width: 150px;height: 200px;">
                     <h3 class="text-xl font-display"><?= esc($atleta['nombres']) ?></h3>
                     <p class="text-sm">Edad: <?= esc($atleta['edad']) ?> | Club: <?= esc($atleta['club']) ?></p>
                     <p><?= ''//esc($atleta['descripcion']) ?></p>
