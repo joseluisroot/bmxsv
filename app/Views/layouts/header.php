@@ -1,16 +1,37 @@
 <header class="bg-white/80 backdrop-blur-md shadow sticky top-0 z-50">
     <div class="container mx-auto flex justify-between items-center py-4 px-6">
+        <!-- Logo -->
         <a href="<?= base_url() ?>" class="flex items-center space-x-2">
-            <img src="<?= base_url('/images/Logo.PNG') ?>" alt="BMXSV Logo" class="h-20 w-auto">
+            <img src="<?= base_url('/images/Logo.PNG') ?>" alt="BMXSV Logo" class="h-14 w-auto">
         </a>
-        <nav class="space-x-4 text-sm font-semibold text-gray-700">
-            <a href="#agenda" class="hover:text-red-600">Agenda</a>
-            <a href="#resultados" class="hover:text-red-600">Resultados</a>
-            <a href="#ranking" class="hover:text-red-600">Ranking</a>
-            <a href="#atletas" class="hover:text-red-600">Atletas</a>
-            <a href="#galeria" class="hover:text-red-600">Galería</a>
-            <a href="#noticias" class="hover:text-red-600">Noticias</a>
-            <a href="#contacto" class="hover:text-red-600">Contacto</a>
+
+        <!-- Botón hamburguesa -->
+        <button id="menu-toggle" class="text-gray-700 text-2xl md:hidden focus:outline-none">
+            <i id="menu-icon" class="fas fa-bars"></i>
+        </button>
+
+        <!-- Menú navegación escritorio -->
+        <nav class="hidden md:flex space-x-4 text-sm font-semibold text-gray-700">
+            <a href="#agenda" class="hover:text-red-600 w-full">Agenda</a>
+            <a href="#resultados" class="menu-link hover:text-red-600 w-full">Resultados</a>
+            <a href="#ranking" class="menu-link hover:text-red-600 w-full">Ranking</a>
+            <a href="#atletas" class="menu-link hover:text-red-600 w-full">Atletas</a>
+            <a href="#galeria" class="menu-link hover:text-red-600 w-full">Galería</a>
+            <a href="#noticias" class="menu-link hover:text-red-600 w-full">Noticias</a>
+            <a href="#contacto" class="menu-link hover:text-red-600 w-full">Contacto</a>
         </nav>
     </div>
+
+    <!-- Menú navegación móvil con animación -->
+    <nav id="mobile-menu"
+         class="md:hidden overflow-hidden max-h-0 transition-all duration-300 ease-in-out flex flex-col items-center text-center px-6 text-sm font-semibold text-gray-700 space-y-2">
+        <a href="#agenda" class="hover:text-red-600 w-full">Agenda</a>
+        <a href="#resultados" class="hover:text-red-600 w-full">Resultados</a>
+        <a href="#ranking" class="hover:text-red-600 w-full">Ranking</a>
+        <a href="#atletas" class="hover:text-red-600 w-full">Atletas</a>
+        <a href="#galeria" class="hover:text-red-600 w-full">Galería</a>
+        <a href="#noticias" class="hover:text-red-600 w-full">Noticias</a>
+        <a href="#contacto" class="hover:text-red-600 w-full">Contacto</a>
+    </nav>
+
 </header>

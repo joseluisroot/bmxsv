@@ -1,18 +1,31 @@
 <!-- Hero Section -->
-<section class="relative h-screen bg-cover bg-center" style="background-image: url('/images/hero.jpg')">
-    <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
-        <div class="text-center text-white px-6">
-            <h1 class="text-5xl md:text-7xl font-display mb-4">Bicicross El Salvador</h1>
-            <p class="text-lg md:text-xl mb-6">Vive la emoción del BMX Race y forma parte del movimiento</p>
-            <a href="#unete" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full transition">ÚNETE AL BMX</a>
+<section class="relative min-h-[90vh] md:h-screen bg-cover bg-center" style="background-image: url('/images/hero.jpg')">
+    <div class="absolute inset-0 bg-black/60 flex items-center justify-center px-4">
+        <div class="text-center text-white max-w-2xl animate-fade-in-up">
+            <h1 class="text-4xl sm:text-5xl md:text-7xl font-display font-bold mb-4 leading-tight">
+                Bicicross El Salvador
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl mb-6 text-white/90">
+                Vive la emoción del BMX Race y forma parte del movimiento
+            </p>
+            <a href="#unete"
+               class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-full transition duration-300 shadow-lg">
+                ÚNETE AL BMX
+            </a>
         </div>
     </div>
 </section>
 
+
 <!-- Agenda de Carreras -->
-<section id="agenda" class="container mx-auto py-16 px-6">
-    <h2 class="text-4xl font-display mb-6 text-center">Agenda de Carreras</h2>
-    <div id='calendar' class="bg-white rounded shadow p-4"></div>
+<section id="agenda" class="py-16 bg-white">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">Agenda de Carreras</h2>
+
+        <div class="bg-white rounded-2xl shadow-lg p-4 overflow-auto">
+            <div id="calendar" class="text-sm md:text-base"></div>
+        </div>
+    </div>
 </section>
 
 <!-- Resultados -->
@@ -139,3 +152,18 @@
         <div class="text-center">[Formulario de contacto y redes sociales]</div>
     </div>
 </section>
+
+<!-- Modal Detalle Evento -->
+<div id="eventoModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden transition-opacity duration-300">
+    <div id="modalContent" class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative animate-fade-in-up">
+        <!-- Botón cerrar -->
+        <button id="cerrarModal" class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <h3 id="modalTitulo" class="text-2xl font-bold text-red-600 mb-2"></h3>
+        <p id="modalFecha" class="text-gray-700 mb-4"></p>
+        <div id="modalContenido" class="text-gray-800 text-sm space-y-2"></div>
+    </div>
+</div>
+
