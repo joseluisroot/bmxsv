@@ -169,12 +169,258 @@
         }
     }*/
 
-
-
     // Cerrar modal
     document.getElementById('cerrarModal').addEventListener('click', () => {
         document.getElementById('eventoModal').classList.add('hidden');
     });
 
+    const rankingData = {
+        "julio": [
+            {
+                tipo: "puntos",
+                categoria: "Infantil Masculino",
+                atletas: [
+                    { posicion: 1, nombre: "Lucas Martínez", valor: 120, club: "Club San Salvador" },
+                    { posicion: 2, nombre: "Luis Rafael", valor: 115, club: "Club Ilopango" }
+                ]
+            },
+            {
+                tipo: "tiempo",
+                categoria: "Infantil Femenino",
+                atletas: [
+                    { posicion: 1, nombre: "Ana López", valor: "1:23.56", club: "Club Apopa" },
+                    { posicion: 2, nombre: "Carla Pérez", valor: "1:25.12", club: "Club Cuscatlán" }
+                ]
+            }
+        ],
+        "agosto": [
+            {
+                tipo: "puntos",
+                categoria: "Juvenil Masculino",
+                atletas: [
+                    { posicion: 1, nombre: "Daniel Chávez", valor: 130, club: "Club Santa Ana" },
+                    { posicion: 2, nombre: "Carlos Ruiz", valor: 125, club: "Club La Libertad" }
+                ]
+            }
+        ]
+    };
+
+    const tabsContainer = document.getElementById('tabs-container');
+    const contentContainer = document.getElementById('ranking-content');
+
+    // Generar Tabs
+    Object.keys(rankingData).forEach((mes, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = mes.charAt(0).toUpperCase() + mes.slice(1);
+        btn.setAttribute('data-tab', mes);
+        btn.className = `tab-btn px-4 py-2 rounded ${index === 0 ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'} hover:bg-gray-300`;
+        tabsContainer.appendChild(btn);
+    });
+
+    // Generar contenido
+    Object.entries(rankingData).forEach(([mes, rankings], index) => {
+        const tabDiv = document.createElement('div');
+        tabDiv.id = `tab-${mes}`;
+        tabDiv.className = `tab-content ${index !== 0 ? 'hidden' : ''}`;
+
+        rankings.forEach(ranking => {
+            const tabla = `
+        <div class="mb-8">
+          <p class="mb-2 text-sm text-gray-600 italic">Ranking por <strong>${ranking.tipo}</strong> – ${ranking.categoria}</p>
+          <div class="overflow-auto rounded-lg shadow">
+            <table class="min-w-full text-sm text-left text-gray-700">
+              <thead class="bg-gray-100 text-gray-800">
+                <tr>
+                  <th class="px-4 py-2">#</th>
+                  <th class="px-4 py-2">Nombre</th>
+                  <th class="px-4 py-2">${ranking.tipo === 'tiempo' ? 'Tiempo' : 'Puntos'}</th>
+                  <th class="px-4 py-2">Club</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ranking.atletas.map(atleta => `
+                  <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-2">${atleta.posicion}</td>
+                    <td class="px-4 py-2">${atleta.nombre}</td>
+                    <td class="px-4 py-2">${atleta.valor}</td>
+                    <td class="px-4 py-2">${atleta.club}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+            tabDiv.innerHTML += tabla;
+        });
+
+        contentContainer.appendChild(tabDiv);
+    });
+
+    // Funcionalidad de tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const selectedTab = btn.getAttribute('data-tab');
+
+            // Mostrar contenido
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById('tab-' + selectedTab).classList.remove('hidden');
+
+            // Estilos activos
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-red-600', 'text-white');
+                b.classList.add('bg-gray-200', 'text-gray-800');
+            });
+            btn.classList.add('bg-red-600', 'text-white');
+            btn.classList.remove('bg-gray-200', 'text-gray-800');
+        });
+    });
+
+
+    const atletasPorPagina = 6;
+    let paginaActual = 1;
+    let atletasFiltrados = [];
+
+    const contenedor = document.getElementById('contenedor-atletas');
+    const inputBuscar = document.getElementById('buscador');
+    const filtroClub = document.getElementById('filtro-club');
+    const filtroCategoria = document.getElementById('filtro-categoria');
+
+    const btnAnterior = document.getElementById('anterior');
+    const btnSiguiente = document.getElementById('siguiente');
+
+    // Obtener opciones únicas para los filtros
+    function llenarFiltros() {
+        const clubes = [...new Set(atletasData.map(a => a.club))].sort();
+        const categorias = [...new Set(atletasData.map(a => a.categoria))].sort();
+
+        clubes.forEach(club => {
+            const opt = document.createElement('option');
+            opt.value = club;
+            opt.textContent = club;
+            filtroClub.appendChild(opt);
+        });
+
+        categorias.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            filtroCategoria.appendChild(opt);
+        });
+    }
+
+    // Renderizar tarjetas de atletas
+    function mostrarAtletas() {
+        contenedor.innerHTML = '';
+        const inicio = (paginaActual - 1) * atletasPorPagina;
+        const fin = inicio + atletasPorPagina;
+        const atletasPagina = atletasFiltrados.slice(inicio, fin);
+
+        atletasPagina.forEach(a => {
+            const card = document.createElement('a');
+            card.href = `/atletas/${a.slug}`;
+            card.className = 'bg-gray-100 p-4 rounded shadow hover:shadow-lg transition block';
+
+            card.innerHTML = `
+        <img src="/uploads/${a.foto}.png" alt="${a.nombres}"
+             class="mx-auto mb-3 rounded-full object-cover w-32 h-40">
+        <h3 class="text-xl font-display">${a.nombres}</h3>
+        <p class="text-sm">Edad: ${a.edad} | Club: ${a.club}</p>
+      `;
+            contenedor.appendChild(card);
+        });
+
+        btnAnterior.disabled = paginaActual === 1;
+        btnSiguiente.disabled = paginaActual >= Math.ceil(atletasFiltrados.length / atletasPorPagina);
+    }
+
+    function aplicarFiltros() {
+        const texto = inputBuscar.value.toLowerCase();
+        const club = filtroClub.value;
+        const categoria = filtroCategoria.value;
+
+        atletasFiltrados = atletasData.filter(a =>
+            a.nombres.toLowerCase().includes(texto) &&
+            (club === '' || a.club === club) &&
+            (categoria === '' || a.categoria === categoria)
+        );
+
+        paginaActual = 1;
+        mostrarAtletas();
+    }
+
+    inputBuscar.addEventListener('input', aplicarFiltros);
+    filtroClub.addEventListener('change', aplicarFiltros);
+    filtroCategoria.addEventListener('change', aplicarFiltros);
+
+    btnAnterior.addEventListener('click', () => {
+        if (paginaActual > 1) {
+            paginaActual--;
+            mostrarAtletas();
+        }
+    });
+
+    btnSiguiente.addEventListener('click', () => {
+        if (paginaActual < Math.ceil(atletasFiltrados.length / atletasPorPagina)) {
+            paginaActual++;
+            mostrarAtletas();
+        }
+    });
+
+    // Inicializar
+    llenarFiltros();
+    atletasFiltrados = atletasData;
+    mostrarAtletas();
+
+    const botones = document.querySelectorAll(".filter-btn");
+    const items = document.querySelectorAll(".galeria-item");
+
+    let filtroCategoriaGaleria = "todos";
+    let filtroAnio = "todos";
+
+    botones.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const categoria = btn.dataset.categoria;
+            const anio = btn.dataset.anio;
+
+            if (categoria) filtroCategoriaGaleria = categoria;
+            if (anio) filtroAnio = anio;
+
+            // Limpiar todos los estilos activos
+            botones.forEach(b => {
+                b.classList.remove("bg-red-600", "text-white", "shadow-md", "ring-2", "ring-red-400");
+                b.classList.add("bg-gray-200", "text-black");
+            });
+
+            // Activar estilos visuales para botones seleccionados
+            botones.forEach(b => {
+                const isCategoria = b.dataset.categoria === filtroCategoriaGaleria;
+                const isAnio = b.dataset.anio === filtroAnio;
+
+                if ((b.dataset.categoria && isCategoria) || (b.dataset.anio && isAnio)) {
+                    b.classList.remove("bg-gray-200", "text-black");
+                    b.classList.add("bg-red-600", "text-white", "shadow-md", "ring-2", "ring-red-400");
+                }
+            });
+
+            // Mostrar u ocultar imágenes según los filtros
+            items.forEach(item => {
+                const itemCat = item.dataset.categoria;
+                const itemAnio = item.dataset.anio;
+
+                const coincideCategoria = filtroCategoriaGaleria === "todos" || itemCat === filtroCategoriaGaleria;
+                const coincideAnio = filtroAnio === "todos" || itemAnio === filtroAnio;
+
+                item.style.display = (coincideCategoria && coincideAnio) ? "block" : "none";
+            });
+        });
+    });
+
+    new Swiper('.swiper', {
+        slidesPerView: 1.1,
+        spaceBetween: 12,
+        loop: false,
+        grabCursor: true,
+    });
 
 </script>
