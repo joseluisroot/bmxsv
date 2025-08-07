@@ -16,9 +16,8 @@
     </div>
 </section>
 
-
 <!-- Agenda de Carreras -->
-<section id="agenda" class="py-16 bg-white shadow-md">
+<section id="agenda" class="py-16 bg-white shadow-md scroll-mt-24">
     <div class="container mx-auto px-6">
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">Agenda de Carreras</h2>
 
@@ -29,7 +28,7 @@
 </section>
 
 <!-- Resultados -->
-<section id="resultados" class="bg-white py-16 px-6 shadow-md">
+<section id="resultados" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <h2 class="text-4xl font-display mb-6 text-center">Resultados Recientes</h2>
         <div class="overflow-x-auto">
@@ -56,7 +55,7 @@
 </section>
 
 <!-- Ranking -->
-<section id="ranking" class="py-16 px-6 bg-white shadow-md">
+<section id="ranking" class="py-16 px-6 bg-white shadow-md scroll-mt-24">
     <div class="container mx-auto px-6">
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">Ranking Mensual de Atletas</h2>
 
@@ -76,9 +75,13 @@
 <script>
     const atletasData = <?= json_encode($atletas) ?>;
 </script>
-<section id="atletas" class="bg-white py-16 px-6 shadow-md">
+<section id="atletas" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-10 text-center">Nuestros Atletas</h2>
+
+        <p class="text-center text-gray-700 max-w-3xl mx-auto mb-10 text-base sm:text-lg">
+            Conoce a los atletas que representan el espíritu del BMX salvadoreño. Cada uno de ellos entrena con pasión, disciplina y entrega para destacar en cada competencia nacional e internacional.
+        </p>
 
         <!-- Filtros -->
         <div class="flex flex-wrap gap-4 justify-center mb-6">
@@ -111,7 +114,7 @@
 </section>
 
 <!-- Galería -->
-<section id="galeria" class="bg-gray-50 py-16 px-6 shadow-md">
+<section id="galeria" class="bg-gray-50 py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-10 text-center">Galería por Evento y Año</h2>
 
@@ -149,7 +152,7 @@
 </section>
 
 <!-- Noticias -->
-<section id="noticias" class="bg-white py-16 px-6 shadow-md">
+<section id="noticias" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <h2 class="text-4xl font-display mb-6 text-center">Noticias</h2>
 
@@ -196,7 +199,7 @@
 </section>
 
 <!-- Horarios de Entrenamiento -->
-<section id="horarios" class="bg-gray-50 py-16 px-6">
+<section id="horarios" class="bg-gray-50 py-16 px-6 scroll-mt-24">
     <div class="container mx-auto max-w-4xl">
         <h2 class="text-4xl font-display mb-8 text-center text-red-600">Horarios de Entrenamiento</h2>
 
@@ -229,7 +232,7 @@
 </section>
 
 <!-- Únete -->
-<section id="unete" class="bg-red-600 text-white py-20 px-6">
+<section id="unete" class="bg-red-600 text-white py-20 px-6 scroll-mt-24">
     <div class="container mx-auto text-center">
         <h2 class="text-4xl font-display mb-6">¿Quieres unirte al BMX?</h2>
         <p class="mb-6 text-lg">Conoce cómo formar parte del equipo y comenzar tu aventura en el bicicross.</p>
@@ -244,7 +247,7 @@
 </section>
 
 <!-- Contacto -->
-<section id="contacto" class="bg-gray-900 text-white py-16 px-6">
+<section id="contacto" class="bg-gray-900 text-white py-16 px-6 scroll-mt-24">
     <div class="container mx-auto max-w-3xl">
         <h2 class="text-4xl font-display mb-6 text-center">Contacto</h2>
 
@@ -283,7 +286,7 @@
 </section>
 
 <!-- Patrocinadores -->
-<section id="patrocinadores" class="bg-white py-20 px-6">
+<section id="patrocinadores" class="bg-white py-20 px-6 scroll-mt-24">
     <div class="container mx-auto max-w-5xl text-center">
         <h2 class="text-4xl font-display mb-6 text-red-600">Patrocinadores</h2>
         <p class="mb-10 text-gray-700 text-lg">

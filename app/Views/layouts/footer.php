@@ -31,5 +31,12 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/es.global.min.js"></script>
 <?= $calendarScript ?? '' ?>
+
+<button id="btnArriba"
+        class="fixed bottom-6 right-6 bg-red-600 text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition-opacity opacity-0 pointer-events-none z-50"
+        aria-label="Volver arriba">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
 </body>
 </html>

@@ -1,4 +1,29 @@
 <script>
+
+    // Scroll Spy para destacar el menú activo
+    const secciones = document.querySelectorAll("section[id]");
+    const enlacesMenu = document.querySelectorAll(".menu-link");
+
+    window.addEventListener("scroll", () => {
+        let scrollY = window.pageYOffset;
+
+        secciones.forEach(seccion => {
+            const altura = seccion.offsetHeight;
+            const top = seccion.offsetTop - 150; // Compensar por header sticky
+            const id = seccion.getAttribute("id");
+
+            if (scrollY >= top && scrollY < top + altura) {
+                enlacesMenu.forEach(enlace => {
+                    enlace.classList.remove("text-red-600", "font-bold");
+                    if (enlace.getAttribute("href") === `#${id}`) {
+                        enlace.classList.add("text-red-600", "font-bold");
+                    }
+                });
+            }
+        });
+    });
+
+
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -118,6 +143,34 @@
         });
 
         calendar.render();
+
+        const btnArriba = document.getElementById("btnArriba");
+
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 400) {
+                btnArriba.classList.remove("opacity-0", "pointer-events-none");
+            } else {
+                btnArriba.classList.add("opacity-0", "pointer-events-none");
+            }
+        });
+
+        btnArriba.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        const siteHeader = document.getElementById('siteHeader');
+        const headerInner = document.getElementById('headerInner');
+        const logoImg = document.getElementById('logoImg');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) {
+                headerInner.classList.replace('py-4', 'py-2');
+                logoImg.classList.replace('h-14', 'h-10');
+            } else {
+                headerInner.classList.replace('py-2', 'py-4');
+                logoImg.classList.replace('h-10', 'h-14');
+            }
+        });
     });
 
     const toggleBtn = document.getElementById('menu-toggle');
@@ -322,11 +375,12 @@
             card.className = 'bg-gray-100 p-4 rounded shadow hover:shadow-lg transition block';
 
             card.innerHTML = `
-        <img src="/uploads/${a.foto}.png" alt="${a.nombres}"
-             class="mx-auto mb-3 rounded-full object-cover w-32 h-40">
-        <h3 class="text-xl font-display">${a.nombres}</h3>
-        <p class="text-sm">Edad: ${a.edad} | Club: ${a.club}</p>
-      `;
+            <img src="/uploads/${a.foto}.png" alt="${a.nombres}"
+                 class="mx-auto mb-3 rounded-full object-cover w-32 h-40">
+            <h3 class="text-xl font-display mb-1">${a.nombres}</h3>
+            <p class="text-sm text-gray-600 mb-1">Edad: ${a.edad ?? '-'} | Club: ${a.club ?? '-'}</p>
+            <p class="text-sm text-gray-700 line-clamp-3">${a.descripcion ?? ''}</p>
+        `;
             contenedor.appendChild(card);
         });
 
