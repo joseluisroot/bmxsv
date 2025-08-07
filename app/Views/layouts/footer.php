@@ -2,7 +2,7 @@
     <div class="container mx-auto text-center space-y-4">
         <!-- Logo e identidad -->
         <div class="flex justify-center items-center space-x-3">
-            <img src="<?= base_url('/images/logo.png') ?>" alt="BMXSV" class="h-10">
+            <img src="<?= base_url('/images/Logo.PNG') ?>" alt="BMXSV" class="h-10">
             <span class="text-xl font-display">BMXSV</span>
         </div>
 
