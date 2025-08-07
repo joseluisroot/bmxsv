@@ -10,7 +10,7 @@
 
 <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
     <div class="flex flex-col items-center mb-6">
-        <img src="<?= base_url('images/logo.png') ?>" alt="Logo Bicicross" class="w-24 h-24 mb-4">
+        <img src="<?= base_url('images/Logo.PNG') ?>" alt="Logo Bicicross" class="w-24 h-24 mb-4">
         <h1 class="text-2xl font-bold text-center text-gray-800">Iniciar Sesión</h1>
     </div>
 
