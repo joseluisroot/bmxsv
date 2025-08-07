@@ -17,3 +17,6 @@ $routes->get('logout', 'AuthController::logout');
 $routes->get('/dashboard', 'PadreController::index', ['filter' => 'auth']);
 $routes->get('/padre/atletas', 'PadreController::atletas', ['filter' => 'auth']);
 
+$routes->get('seeders', 'Seeders::index');
+$routes->get('seeders/(:segment)', 'Seeders::run/$1');
+
