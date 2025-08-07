@@ -13,6 +13,10 @@ class Seeders extends Controller
 
     public function run($seederName)
     {
+
+        var_dump($seederName);
+        exit;
+
         try {
             $seeder = \Config\Services::seeder();
             $seeder->call($seederName);
