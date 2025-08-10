@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'BMXSV') ?></title>
+    <title><?= esc($title ?? 'Noticias | BMXSV') ?></title>
+    <meta name="description" content="<?= esc($descripcion ?? 'Listado de noticias, eventos y novedades del BMX en El Salvador.') ?>">
+    <link rel="canonical" href="<?= base_url('noticias') ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">

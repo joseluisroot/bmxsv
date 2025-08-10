@@ -20,11 +20,13 @@
             <a href="#galeria" class="hover:text-red-600 w-full">Galería</a>
             <a href="#noticias" class="hover:text-red-600 w-full">Noticias</a>
             <a href="#contacto" class="hover:text-red-600 w-full">Contacto</a>
-            <?php if (session()->has('id')): ?>
+            <?php if (session()->has('id')){ ?>
                 <a href="<?= base_url('logout') ?>" class="text-sm text-gray-700 hover:underline ml-4">
                     Cerrar sesión
                 </a>
-            <?php endif; ?>
+            <?php } else { ?>
+                <a href="/login" class="hover:text-red-600 w-full">Ingreso</a>
+            <?php } ?>
         </nav>
     </div>
 
@@ -38,10 +40,12 @@
         <a href="#galeria" class="menu-link hover:text-red-600 w-full">Galería</a>
         <a href="#noticias" class="menu-link hover:text-red-600 w-full">Noticias</a>
         <a href="#contacto" class="menu-link hover:text-red-600 w-full">Contacto</a>
-        <?php if (session()->has('id')): ?>
+        <?php if (session()->has('id')){ ?>
             <a href="<?= base_url('logout') ?>" class="text-sm text-gray-700 hover:underline ml-4">
                 Cerrar sesión
             </a>
-        <?php endif; ?>
+        <?php } else { ?>
+            <a href="/login" class="hover:text-red-600 w-full">Ingreso</a>
+        <?php } ?>
     </nav>
 </header>

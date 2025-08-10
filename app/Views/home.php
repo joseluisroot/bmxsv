@@ -157,45 +157,27 @@
         <h2 class="text-4xl font-display mb-6 text-center">Noticias</h2>
 
         <div class="grid md:grid-cols-3 gap-6">
-            <!-- Noticia 1 -->
-            <a href="<?= base_url('noticias/luis-martinez-gana-en-san-salvador') ?>" class="block bg-gray-100 rounded shadow hover:shadow-lg transition overflow-hidden">
-                <img src="https://picsum.photos/600/300?random=101" alt="Luis Martínez" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-xl font-display mb-1">Luis Martínez gana en San Salvador</h3>
-                    <p class="text-sm text-gray-600 mb-2">Publicado el 3 de julio de 2025</p>
-                    <p class="text-gray-800">Con una salida impecable, Luis se llevó el primer lugar de la competencia junior en la capital.</p>
-                </div>
-            </a>
+            <?php foreach ($ultimasNoticias as $noticia): ?>
+                <a href="<?= base_url('noticias/' . esc($noticia['slug'])) ?>" class="block bg-gray-100 rounded shadow hover:shadow-lg transition overflow-hidden">
+                    <img src="<?= base_url('uploads/noticias/' . $noticia['imagen_destacada']) ?>"
+                         alt="<?= esc($noticia['titulo']) ?>"
+                         class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xl font-display mb-1"><?= esc($noticia['titulo']) ?></h3>
+                        <p class="text-sm text-gray-600 mb-2">Publicado el <?= date('d M Y', strtotime($noticia['fecha_publicacion'])) ?></p>
+                        <p class="text-gray-800"><?= esc($noticia['resumen']) ?></p>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
 
-            <!-- Noticia 2 -->
-            <a href="<?= base_url('noticias/entrevista-a-kevin-lopez') ?>" class="block bg-gray-100 rounded shadow hover:shadow-lg transition overflow-hidden">
-                <img src="https://picsum.photos/600/300?random=102" alt="Kevin López" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-xl font-display mb-1">Entrevista a Kevin López</h3>
-                    <p class="text-sm text-gray-600 mb-2">Publicado el 1 de julio de 2025</p>
-                    <p class="text-gray-800">El campeón nacional nos comparte su rutina, metas y cómo motiva a nuevos riders.</p>
-                </div>
-            </a>
-
-            <!-- Noticia 3 -->
-            <a href="<?= base_url('noticias/ranking-actualizado-julio') ?>" class="block bg-gray-100 rounded shadow hover:shadow-lg transition overflow-hidden">
-                <img src="https://picsum.photos/600/300?random=103" alt="Ranking Julio" class="w-full h-48 object-cover">
-                <div class="p-4">
-                    <h3 class="text-xl font-display mb-1">Ranking actualizado de julio</h3>
-                    <p class="text-sm text-gray-600 mb-2">Publicado el 5 de julio de 2025</p>
-                    <p class="text-gray-800">Consulta el ranking oficial del mes y cómo se mueven los favoritos.</p>
-                </div>
+        <!-- Botón para ver más noticias -->
+        <div class="mt-10 text-center">
+            <a href="<?= base_url('noticias') ?>" class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-full transition">
+                Ver más noticias
             </a>
         </div>
     </div>
-
-    <!-- Botón para ver más noticias -->
-    <div class="mt-10 text-center">
-        <a href="<?= base_url('noticias') ?>" class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-full transition">
-            Ver más noticias
-        </a>
-    </div>
-
 </section>
 
 <!-- Horarios de Entrenamiento -->

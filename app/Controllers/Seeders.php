@@ -14,7 +14,7 @@ class Seeders extends Controller
     public function run($seederName)
     {
         try {
-            $seeder = \Config\Services::seeder();
+            $seeder = \CodeIgniter\Config\Services::se;
             $seeder->call($seederName);
             echo "Seeder ejecutado exitosamente: {$seederName}";
         } catch (\Throwable $e) {

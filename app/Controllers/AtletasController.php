@@ -7,7 +7,7 @@ use App\Models\AtletaGaleriaModel;
 use App\Models\AtletaModel;
 use App\Models\RedesSocialesModel;
 
-class Atletas extends BaseController
+class AtletasController extends BaseController
 {
 
     public function perfil($slug)
