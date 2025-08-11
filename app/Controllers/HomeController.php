@@ -24,11 +24,9 @@ class HomeController extends BaseController
 
         $data['calendarScript'] = view('scripts/calendar');
 
-        return view('layouts/head', $data, ['saveData' => true])
-            . view('layouts/header', ['saveData' => true])
-            . view('home', $data, ['saveData' => true])
-            . view('layouts/footer',['saveData' => true]);
-
-
+        return view('layouts/head', $data)
+            . view('layouts/header')
+            . view('home', $data)
+            . view('layouts/footer');
     }
 }
