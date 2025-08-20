@@ -38,10 +38,11 @@
     <meta name="twitter:image" content="<?= esc($og_image) ?>" />
 
     <!-- Icons / PWA (opcional pero recomendado) -->
-    <link rel="icon" href="<?= base_url('favicon.ico') ?>" sizes="any" />
+    <link rel="icon" href="<?= base_url('icons/favicon.ico') ?>" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('icons/favicon-32x32.png') ?>">
     <link rel="icon" type="image/png" href="<?= base_url('icons/icon-192.png') ?>" sizes="192x192" />
-    <link rel="apple-touch-icon" href="<?= base_url('icons/apple-touch-icon.png') ?>" />
-    <link rel="manifest" href="<?= base_url('site.webmanifest') ?>" />
+    <link rel="apple-touch-icon" href="<?= base_url('icons/apple-touch-icon.png') ?>">
+    <link rel="manifest" href="<?= base_url('site.webmanifest') ?>">
     <meta name="theme-color" content="#dc2626" />
 
     <!-- Preconnects -->
@@ -51,9 +52,12 @@
 
     <!-- Fuentes y CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 
     <!-- Tailwind (si no haces build local) -->
     <script src="https://cdn.tailwindcss.com" defer></script>

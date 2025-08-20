@@ -23,7 +23,6 @@
         });
     });
 
-
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -227,7 +226,7 @@
         document.getElementById('eventoModal').classList.add('hidden');
     });
 
-    const rankingData = {
+    /*const rankingData = {
         "julio": [
             {
                 tipo: "puntos",
@@ -327,8 +326,7 @@
             btn.classList.add('bg-red-600', 'text-white');
             btn.classList.remove('bg-gray-200', 'text-gray-800');
         });
-    });
-
+    });*/
 
     const atletasPorPagina = 6;
     let paginaActual = 1;
@@ -338,7 +336,6 @@
     const inputBuscar = document.getElementById('buscador');
     const filtroClub = document.getElementById('filtro-club');
     const filtroCategoria = document.getElementById('filtro-categoria');
-
     const btnAnterior = document.getElementById('anterior');
     const btnSiguiente = document.getElementById('siguiente');
 
@@ -371,7 +368,7 @@
 
         atletasPagina.forEach(a => {
             const card = document.createElement('a');
-            card.href = `/atletas/${a.slug}`;
+            card.href = `/atleta/${a.slug}`;
             card.className = 'bg-gray-100 p-4 rounded shadow hover:shadow-lg transition block';
 
             card.innerHTML = `
