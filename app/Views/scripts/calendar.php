@@ -26,7 +26,8 @@
     document.addEventListener('DOMContentLoaded', function () {
         const calendarEl = document.getElementById('calendar');
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            height: 'auto', // o ej. 600
+            height: 'auto',
+            expandRows: true,
             initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
             locale: 'es',
             nowIndicator: true,
@@ -36,7 +37,7 @@
                 right: 'dayGridMonth,listMonth'
             },
             buttonText: {
-                today: 'Hoy' // Puedes cambiarlo a 'Este día' o 'Ir a hoy', etc.
+                today: 'Hoy'
             },
             views: {
                 listMonth: {
@@ -44,48 +45,515 @@
                     noEventsContent: 'No hay eventos programados'
                 },
                 dayGridMonth: {
-                    buttonText: 'Mes'
+                    buttonText: 'Mes',
+                    noEventsContent: 'No hay eventos programados'
                 }
             },
             allDayText: 'Todo el día',
             events: [
                 {
-                    title: 'Entrenamiento (Pista San Andrés)',
+                    title: 'Entrenamiento General',
+                    start: '2025-08-01',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+      Menores: entrenamiento libre supervisado
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento General',
                     start: '2025-08-02',
                     color: '#34d399',
-                    description: 'Entrenamiento libre para todas las categorías.'
-                },
-                {
-                    title: 'Competencia Interna - Fecha 2',
-                    start: '2025-07-14',
-                    color: '#60a5fa',
-                    description: 'Evento interno para clubes locales. Pista BMX Apopa.'
-                },
-                {
-                    title: 'Entrenamiento (Pista San Andrés)',
-                    start: '2025-08-02',
-                    color: '#34d399'
-                },
-                {
-                    title: 'Competencia Interna - Fecha 2',
-                    start: '2025-07-14',
-                    color: '#60a5fa'
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="9:00">9:00 am</time> – <time datetime="11:00">11:00 am</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+  </div>
+</div>
+<div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Hugo Rubio</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="9:30">9:30 am</time> – <time datetime="11:00">11:00 am</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+        <i class="fa-solid fa-trophy mr-1.5"></i> Balance
+        <i class="fa-solid fa-trophy mr-1.5"></i> 3-4
+        <i class="fa-solid fa-trophy mr-1.5"></i> 5-6
+    </span>
+  </div>
+</div>
+                                      `
+                    }
                 },
                 {
                     title: 'Vacaciones Agostinas',
-                    start: '2025-07-21',
-                    end: '2025-07-23',
-                    color: '#f87171'
+                    start: '2025-08-04',
+                    end: '2025-08-09',
+                    color: '#d4c88d'
                 },
                 {
-                    title: 'Cuarta Fecha',
+                    title: 'Entrenamiento General',
+                    start: '2025-08-11',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+      Menores: entrenamiento libre supervisado
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento General',
+                    start: '2025-08-13',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+      Menores: entrenamiento libre supervisado
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento General',
+                    start: '2025-08-15',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+      Menores: entrenamiento libre supervisado
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento Libre',
+                    start: '2025-08-18',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+                                           <ul class="space-y-2">
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+                                              <span><span class="font-medium">Coach:</span> Sin Coach</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-solid fa-location-dot mt-0.5"></i>
+                                              <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-regular fa-clock mt-0.5"></i>
+                                              <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+                                            </li>
+                                          </ul>
+                                          <div class="mt-3 flex flex-wrap gap-2">
+                                            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+                                              Entrenamiento libre supervisado
+                                            </span>
+                                          </div>
+                                        </div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento Libre',
+                    start: '2025-08-20',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+                                           <ul class="space-y-2">
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+                                              <span><span class="font-medium">Coach:</span> Sin Coach</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-solid fa-location-dot mt-0.5"></i>
+                                              <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-regular fa-clock mt-0.5"></i>
+                                              <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+                                            </li>
+                                          </ul>
+                                          <div class="mt-3 flex flex-wrap gap-2">
+                                            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+                                              Entrenamiento libre supervisado
+                                            </span>
+                                          </div>
+                                        </div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento Libre',
+                    start: '2025-08-22',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+                                           <ul class="space-y-2">
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+                                              <span><span class="font-medium">Coach:</span> Sin Coach</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-solid fa-location-dot mt-0.5"></i>
+                                              <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+                                            </li>
+                                            <li class="flex items-start gap-2">
+                                              <i class="fa-regular fa-clock mt-0.5"></i>
+                                              <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+                                            </li>
+                                          </ul>
+                                          <div class="mt-3 flex flex-wrap gap-2">
+                                            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+                                              Entrenamiento libre supervisado
+                                            </span>
+                                          </div>
+                                        </div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento Libre',
+                    start: '2025-08-23',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Sin Coach</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="9:00">9:00 am</time> – <time datetime="11:00">11:00 am</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+  </div>
+</div>
+<div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Sin Coach</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="9:30">9:30 am</time> – <time datetime="11:00">11:00 am</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+        <i class="fa-solid fa-trophy mr-1.5"></i> Balance
+        <i class="fa-solid fa-trophy mr-1.5"></i> 3-4
+        <i class="fa-solid fa-trophy mr-1.5"></i> 5-6
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento General',
+                    start: '2025-08-25',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+      Menores: entrenamiento libre supervisado
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento General',
+                    start: '2025-08-27',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+      Menores: entrenamiento libre supervisado
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento General',
+                    start: '2025-08-29',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="16:00">4:00 pm</time> – <time datetime="18:00">6:00 pm</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+    <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-700">
+      Menores: entrenamiento libre supervisado
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Entrenamiento General',
+                    start: '2025-08-30',
+                    color: '#34d399',
+                    extendedProps: {
+                        descripcionHTML: `
+                                        <div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Fede Polo</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="9:00">9:00 am</time> – <time datetime="11:00">11:00 am</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+      <i class="fa-solid fa-trophy mr-1.5"></i> Championship
+    </span>
+  </div>
+</div>
+<div class="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-4 shadow-sm text-sm">
+   <ul class="space-y-2">
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-chalkboard-user mt-0.5"></i>
+      <span><span class="font-medium">Coach:</span> Hugo Rubio</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-solid fa-location-dot mt-0.5"></i>
+      <span><span class="font-medium">Lugar:</span> Pista San Andrés</span>
+    </li>
+    <li class="flex items-start gap-2">
+      <i class="fa-regular fa-clock mt-0.5"></i>
+      <span><span class="font-medium">Hora:</span> <time datetime="9:30">9:30 am</time> – <time datetime="11:00">11:00 am</time></span>
+    </li>
+  </ul>
+
+  <div class="mt-3 flex flex-wrap gap-2">
+    <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium">
+        <i class="fa-solid fa-trophy mr-1.5"></i> Balance
+        <i class="fa-solid fa-trophy mr-1.5"></i> 3-4
+        <i class="fa-solid fa-trophy mr-1.5"></i> 5-6
+    </span>
+  </div>
+</div>
+                                      `
+                    }
+                },
+                {
+                    title: 'Competencia Interna - Cuarta FEcha',
                     start: '2025-08-31',
-                    color: '#f87171'
-                },
-                {
-                    title: 'Competencia Interna - Fecha 2',
-                    start: '2025-08-14',
-                    color: '#60a5fa',
+                    color: '#f87171',
                     extendedProps: {
                         descripcionHTML: `
                                         <img src="/images/competencia2.jpg" class="rounded-lg mb-3 w-full" alt="Competencia Fecha 2">
@@ -100,7 +568,7 @@
         });
 
         // Mostrar modal
-        calendar.on('eventClick', function(info) {
+        calendar.on('eventClick', function (info) {
             info.jsEvent.preventDefault();
 
             const titulo = info.event.title;
@@ -143,6 +611,12 @@
 
         calendar.render();
 
+        requestAnimationFrame(() => calendar.updateSize());
+        window.addEventListener('resize', () => calendar.updateSize());
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => calendar.updateSize());
+        }
+
         const btnArriba = document.getElementById("btnArriba");
 
         window.addEventListener("scroll", () => {
@@ -154,7 +628,7 @@
         });
 
         btnArriba.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            window.scrollTo({top: 0, behavior: "smooth"});
         });
 
         const siteHeader = document.getElementById('siteHeader');

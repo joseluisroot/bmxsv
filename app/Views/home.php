@@ -22,7 +22,7 @@
     <div class="container mx-auto px-6">
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">Agenda de Carreras</h2>
 
-        <div class="bg-white rounded-2xl shadow-lg p-4 overflow-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-4 overflow-x-auto md:overflow-visible">
             <div id="calendar" class="text-sm md:text-base"></div>
         </div>
     </div>
@@ -31,11 +31,11 @@
 <!-- Resultados -->
 <section id="resultados" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto px-6">
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">Resultados Recientes</h2>
-
-            <?php if (!empty($ultimaCompetencia)): ?>
-                <div class="text-sm text-gray-600">
+        <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">
+            Resultados Recientes
+        </h2>
+        <?php if (!empty($ultimaCompetencia)): ?>
+            <div class="text-sm text-gray-600">
                     <span class="inline-block px-3 py-1 rounded-full bg-gray-100 border">
                         <?= esc($ultimaCompetencia['nombre']) ?>
                         <?php if (!empty($ultimaCompetencia['sede'])): ?>
@@ -43,15 +43,13 @@
                         <?php endif; ?>
                         · <?= date('d M Y', strtotime($ultimaCompetencia['fecha'])) ?>
                     </span>
-                </div>
-            <?php endif; ?>
-        </div>
-
+            </div>
+        <?php endif; ?>
         <?php if (empty($ultimaCompetencia)): ?>
-            <p class="text-gray-600">Aún no hay competencias registradas.</p>
+            <p class="text-gray-600 text-center">Aún no hay competencias registradas.</p>
         <?php else: ?>
             <?php if (empty($ganadoresPorCategoria)): ?>
-                <p class="text-gray-600">No hay resultados cargados para esta competencia.</p>
+                <p class="text-gray-600 text-center">No hay resultados cargados para esta competencia.</p>
             <?php else: ?>
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm text-left border border-gray-200">
@@ -167,13 +165,14 @@
         <?php endif; ?>
 
         <!-- Paginación -->
-        <?php if ($atletas != null ): ?>
-        <div class="flex justify-center mt-8">
-            <button id="anterior" class="px-4 py-2 border rounded-l text-sm bg-gray-100 hover:bg-gray-200">Anterior
-            </button>
-            <button id="siguiente" class="px-4 py-2 border rounded-r text-sm bg-gray-100 hover:bg-gray-200">Siguiente
-            </button>
-        </div>
+        <?php if ($atletas != null): ?>
+            <div class="flex justify-center mt-8">
+                <button id="anterior" class="px-4 py-2 border rounded-l text-sm bg-gray-100 hover:bg-gray-200">Anterior
+                </button>
+                <button id="siguiente" class="px-4 py-2 border rounded-r text-sm bg-gray-100 hover:bg-gray-200">
+                    Siguiente
+                </button>
+            </div>
         <?php endif; ?>
     </div>
 </section>
@@ -188,18 +187,28 @@
         <?php else: ?>
             <!-- Barra de filtros simple (cliente) -->
             <div class="flex flex-wrap gap-2 justify-center mb-6">
-                <button data-categoria="todos" class="filter-btn bg-red-600 text-white px-4 py-2 rounded-full text-sm">Todos</button>
-                <button data-categoria="campeonato" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">Campeonato</button>
-                <button data-categoria="entrenamiento" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">Entrenamiento</button>
-                <button data-categoria="openhouse" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">Open House</button>
+                <button data-categoria="todos" class="filter-btn bg-red-600 text-white px-4 py-2 rounded-full text-sm">
+                    Todos
+                </button>
+                <button data-categoria="campeonato" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">
+                    Campeonato
+                </button>
+                <button data-categoria="entrenamiento" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">
+                    Entrenamiento
+                </button>
+                <button data-categoria="openhouse" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">Open
+                    House
+                </button>
 
-                <button data-anio="todos" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">Todos los años</button>
+                <button data-anio="todos" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm">Todos los años
+                </button>
                 <?php
-                $aniosHome = array_values(array_unique(array_filter(array_map(fn($i)=>$i['anio']??null,$galeriaDestacados))));
+                $aniosHome = array_values(array_unique(array_filter(array_map(fn($i) => $i['anio'] ?? null, $galeriaDestacados))));
                 rsort($aniosHome);
                 foreach ($aniosHome as $y):
                     ?>
-                    <button data-anio="<?= esc($y) ?>" class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm"><?= esc($y) ?></button>
+                    <button data-anio="<?= esc($y) ?>"
+                            class="filter-btn bg-gray-200 px-4 py-2 rounded-full text-sm"><?= esc($y) ?></button>
                 <?php endforeach; ?>
             </div>
 
@@ -219,7 +228,7 @@
                                     data-thumb="<?= esc(base_url($it['thumb'] ?: $it['src'] ?: 'assets/img/galeria-placeholder.jpg')) ?>"
                                     data-embed="<?php
                                     $embed = '';
-                                    if ($it['tipo']==='video') {
+                                    if ($it['tipo'] === 'video') {
                                         if (($it['video_provider'] ?? '') === 'youtube' && !empty($it['video_id'])) {
                                             $embed = "https://www.youtube.com/embed/{$it['video_id']}?rel=0&modestbranding=1";
                                         } elseif (!empty($it['video_url'])) {
@@ -241,7 +250,10 @@
                                                  class="w-full h-full object-cover transition-transform group-hover:scale-105"
                                                  loading="lazy">
                                             <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition">
-                                                <svg class="w-14 h-14 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                                <svg class="w-14 h-14 text-white" viewBox="0 0 24 24"
+                                                     fill="currentColor">
+                                                    <path d="M8 5v14l11-7z"/>
+                                                </svg>
                                             </div>
                                         </div>
                                     </button>
@@ -256,8 +268,9 @@
                                     </button>
                                 <?php endif; ?>
                                 <div class="p-4">
-                                    <h3 class="font-semibold text-lg mb-1"><?= esc($it['titulo'] ?: ($it['tipo']==='video'?'Video':'Foto')) ?></h3>
-                                    <p class="text-sm text-gray-600"><?= esc($it['categoria'] ?: 'General') ?> · <?= esc($it['anio'] ?: '') ?></p>
+                                    <h3 class="font-semibold text-lg mb-1"><?= esc($it['titulo'] ?: ($it['tipo'] === 'video' ? 'Video' : 'Foto')) ?></h3>
+                                    <p class="text-sm text-gray-600"><?= esc($it['categoria'] ?: 'General') ?>
+                                        · <?= esc($it['anio'] ?: '') ?></p>
                                 </div>
                             </article>
                         </div>
@@ -279,7 +292,7 @@
                             data-thumb="<?= esc(base_url($it['thumb'] ?: $it['src'] ?: 'assets/img/galeria-placeholder.jpg')) ?>"
                             data-embed="<?php
                             $embed = '';
-                            if ($it['tipo']==='video') {
+                            if ($it['tipo'] === 'video') {
                                 if (($it['video_provider'] ?? '') === 'youtube' && !empty($it['video_id'])) {
                                     $embed = "https://www.youtube.com/embed/{$it['video_id']}?rel=0&modestbranding=1";
                                 } elseif (!empty($it['video_url'])) {
@@ -301,7 +314,9 @@
                                          class="w-full h-full object-cover transition-transform group-hover:scale-105"
                                          loading="lazy">
                                     <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition">
-                                        <svg class="w-14 h-14 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                                        <svg class="w-14 h-14 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </button>
@@ -316,8 +331,9 @@
                             </button>
                         <?php endif; ?>
                         <div class="p-4">
-                            <h3 class="font-semibold text-lg mb-1"><?= esc($it['titulo'] ?: ($it['tipo']==='video'?'Video':'Foto')) ?></h3>
-                            <p class="text-sm text-gray-600"><?= esc($it['categoria'] ?: 'General') ?> · <?= esc($it['anio'] ?: '') ?></p>
+                            <h3 class="font-semibold text-lg mb-1"><?= esc($it['titulo'] ?: ($it['tipo'] === 'video' ? 'Video' : 'Foto')) ?></h3>
+                            <p class="text-sm text-gray-600"><?= esc($it['categoria'] ?: 'General') ?>
+                                · <?= esc($it['anio'] ?: '') ?></p>
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -329,12 +345,14 @@
     <div id="galeria-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
         <div class="absolute inset-0 bg-black/70"></div>
         <div class="relative bg-black rounded-xl shadow-xl w-[95%] max-w-5xl">
-            <button type="button" class="absolute -top-10 right-0 text-white hover:text-red-400" id="galeria-close" aria-label="Cerrar">✕ Cerrar</button>
+            <button type="button" class="absolute -top-10 right-0 text-white hover:text-red-400" id="galeria-close"
+                    aria-label="Cerrar">✕ Cerrar
+            </button>
             <div class="swiper" id="galeria-swiper">
                 <div class="swiper-wrapper">
                     <?php foreach ($galeriaDestacados as $it): ?>
                         <div class="swiper-slide">
-                            <?php if ($it['tipo']==='video'): ?>
+                            <?php if ($it['tipo'] === 'video'): ?>
                                 <div class="relative aspect-video bg-black flex items-center justify-center">
                                     <iframe class="w-full h-full" data-embed="<?php
                                     $embed = '';
@@ -344,11 +362,15 @@
                                         $embed = $it['video_url'];
                                     }
                                     echo esc($embed);
-                                    ?>" src="" title="Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                                    ?>" src="" title="Video"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen loading="lazy"></iframe>
                                 </div>
                             <?php else: ?>
                                 <div class="relative bg-black">
-                                    <img src="<?= esc(base_url($it['src'] ?: $it['thumb'])) ?>" alt="<?= esc($it['alt'] ?? $it['titulo'] ?? 'Foto') ?>" class="block max-h-[75vh] mx-auto" loading="lazy">
+                                    <img src="<?= esc(base_url($it['src'] ?: $it['thumb'])) ?>"
+                                         alt="<?= esc($it['alt'] ?? $it['titulo'] ?? 'Foto') ?>"
+                                         class="block max-h-[75vh] mx-auto" loading="lazy">
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -363,11 +385,11 @@
 </section>
 
 <script>
-    (function(){
+    (function () {
         // Swiper mobile (cards)
         const mobileSwiper = document.querySelector('#galeria .swiper:not(#galeria-swiper)');
         if (mobileSwiper) {
-            new Swiper(mobileSwiper, { slidesPerView: 1.1, spaceBetween: 12, loop: false, grabCursor: true });
+            new Swiper(mobileSwiper, {slidesPerView: 1.1, spaceBetween: 12, loop: false, grabCursor: true});
         }
 
         // Filtros (cliente)
@@ -376,33 +398,33 @@
         let filtroCategoriaGaleria = "todos";
         let filtroAnio = "todos";
 
-        function applyActiveStyles(){
-            botones.forEach(b=>{
-                b.classList.remove("bg-red-600","text-white","shadow-md","ring-2","ring-red-400");
-                b.classList.add("bg-gray-100","text-black");
+        function applyActiveStyles() {
+            botones.forEach(b => {
+                b.classList.remove("bg-red-600", "text-white", "shadow-md", "ring-2", "ring-red-400");
+                b.classList.add("bg-gray-100", "text-black");
             });
-            botones.forEach(b=>{
+            botones.forEach(b => {
                 const isCategoria = b.dataset.categoria && b.dataset.categoria === filtroCategoriaGaleria;
                 const isAnio = b.dataset.anio && b.dataset.anio === filtroAnio;
                 if (isCategoria || isAnio) {
-                    b.classList.remove("bg-gray-100","text-black");
-                    b.classList.add("bg-red-600","text-white","shadow-md","ring-2","ring-red-400");
+                    b.classList.remove("bg-gray-100", "text-black");
+                    b.classList.add("bg-red-600", "text-white", "shadow-md", "ring-2", "ring-red-400");
                 }
             });
         }
 
-        function applyFilters(){
-            items.forEach(item=>{
+        function applyFilters() {
+            items.forEach(item => {
                 const cat = item.getAttribute('data-categoria') || '';
                 const anio = item.getAttribute('data-anio') || '';
-                const okCat = (filtroCategoriaGaleria==='todos') || (cat===filtroCategoriaGaleria);
-                const okAnio = (filtroAnio==='todos') || (anio===filtroAnio);
+                const okCat = (filtroCategoriaGaleria === 'todos') || (cat === filtroCategoriaGaleria);
+                const okAnio = (filtroAnio === 'todos') || (anio === filtroAnio);
                 item.style.display = (okCat && okAnio) ? 'block' : 'none';
             });
         }
 
-        botones.forEach(btn=>{
-            btn.addEventListener("click", ()=>{
+        botones.forEach(btn => {
+            btn.addEventListener("click", () => {
                 const categoria = btn.dataset.categoria;
                 const anio = btn.dataset.anio;
                 if (categoria) filtroCategoriaGaleria = categoria;
@@ -414,42 +436,44 @@
         applyActiveStyles();
 
         // Modal + Swiper grande (fotos/videos)
-        const modal  = document.getElementById('galeria-modal');
-        const close  = document.getElementById('galeria-close');
+        const modal = document.getElementById('galeria-modal');
+        const close = document.getElementById('galeria-close');
         const bigSwiperEl = document.getElementById('galeria-swiper');
         let bigSwiper = null;
 
-        function openModal(index){
+        function openModal(index) {
             if (!bigSwiper) {
                 bigSwiper = new Swiper(bigSwiperEl, {
                     loop: false,
                     slidesPerView: 1,
                     spaceBetween: 0,
-                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-                    pagination: { el: '.swiper-pagination', clickable: true },
+                    navigation: {nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev'},
+                    pagination: {el: '.swiper-pagination', clickable: true},
                     on: {
                         slideChange: manageVideo,
                         init: manageVideo
                     }
                 });
             }
-            modal.classList.remove('hidden'); modal.classList.add('flex');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
             bigSwiper.slideTo(index, 0);
             manageVideo();
         }
 
-        function closeModal(){
-            modal.classList.add('hidden'); modal.classList.remove('flex');
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             document.body.style.overflow = '';
             // detener video
             const iframes = bigSwiperEl.querySelectorAll('iframe');
-            iframes.forEach(f=> f.src = '');
+            iframes.forEach(f => f.src = '');
         }
 
-        function manageVideo(){
+        function manageVideo() {
             const slides = bigSwiperEl.querySelectorAll('.swiper-slide');
-            slides.forEach((slide, i)=>{
+            slides.forEach((slide, i) => {
                 const iframe = slide.querySelector('iframe');
                 if (!iframe) return;
                 if (i === bigSwiper.activeIndex) {
@@ -461,15 +485,15 @@
             });
         }
 
-        document.querySelectorAll('#galeria .open-modal-slide').forEach(btn=>{
-            btn.addEventListener('click', (e)=>{
+        document.querySelectorAll('#galeria .open-modal-slide').forEach(btn => {
+            btn.addEventListener('click', (e) => {
                 const article = e.currentTarget.closest('.galeria-item');
                 const index = parseInt(article.getAttribute('data-index') || '0', 10);
                 openModal(index);
             });
         });
         close.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e)=>{
+        modal.addEventListener('click', (e) => {
             if (e.target === modal || e.target.classList.contains('bg-black/70')) closeModal();
         });
     })();
