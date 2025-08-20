@@ -126,7 +126,6 @@
     const atletasData = <?= json_encode($atletas) ?>;
 </script>
 
-
 <section id="atletas" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-10 text-center">Nuestros Atletas</h2>
@@ -180,7 +179,7 @@
 <!-- Galería (Destacados en Home) -->
 <section id="galeria" class="bg-gray-50 py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
-        <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-10 text-center">Galería destacada</h2>
+        <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-10 text-center">Galería</h2>
 
         <?php if (empty($galeriaDestacados)): ?>
             <p class="text-center text-gray-600">No hay elementos destacados en este momento.</p>
@@ -502,34 +501,51 @@
 <!-- Noticias -->
 <section id="noticias" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
-        <h2 class="text-4xl font-display mb-6 text-center">Noticias</h2>
+        <!-- Título corregido (rojo y centrado) -->
+        <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">Noticias</h2>
 
-        <div class="grid md:grid-cols-3 gap-6">
-            <?php foreach ($ultimasNoticias as $noticia): ?>
-                <a href="<?= base_url('noticias/' . esc($noticia['slug'])) ?>"
-                   class="block bg-gray-100 rounded shadow hover:shadow-lg transition overflow-hidden">
-                    <img src="<?= base_url('uploads/noticias/' . $noticia['imagen_destacada']) ?>"
-                         alt="<?= esc($noticia['titulo']) ?>"
-                         class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-display mb-1"><?= esc($noticia['titulo']) ?></h3>
-                        <p class="text-sm text-gray-600 mb-2">Publicado
-                            el <?= date('d M Y', strtotime($noticia['fecha_publicacion'])) ?></p>
-                        <p class="text-gray-800"><?= esc($noticia['resumen']) ?></p>
-                    </div>
+        <?php if (empty($ultimasNoticias)): ?>
+            <!-- Estado vacío: mensaje amigable -->
+            <div class="bg-gray-50 border rounded-2xl p-6 text-center max-w-xl mx-auto">
+                <h3 class="text-lg font-semibold text-gray-800 mb-1">Aún no hay noticias publicadas</h3>
+                <p class="text-gray-600">
+                    Estamos preparando contenido sobre competencias, entrenos y nuestra comunidad BMX.
+                    Vuelve pronto para conocer las novedades.
+                </p>
+            </div>
+        <?php else: ?>
+            <!-- Listado de noticias -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <?php foreach ($ultimasNoticias as $noticia): ?>
+                    <a href="<?= base_url('noticias/' . esc($noticia['slug'])) ?>"
+                       class="block bg-gray-100 rounded shadow hover:shadow-lg transition overflow-hidden">
+                        <img
+                                src="<?= base_url('uploads/noticias/' . $noticia['imagen_destacada']) ?>"
+                                alt="<?= esc($noticia['titulo']) ?>"
+                                class="w-full h-48 object-cover"
+                                loading="lazy" decoding="async">
+                        <div class="p-4">
+                            <h3 class="text-xl font-display mb-1"><?= esc($noticia['titulo']) ?></h3>
+                            <p class="text-sm text-gray-600 mb-2">
+                                Publicado el <?= date('d M Y', strtotime($noticia['fecha_publicacion'])) ?>
+                            </p>
+                            <p class="text-gray-800"><?= esc($noticia['resumen']) ?></p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Botón para ver más noticias -->
+            <div class="mt-10 text-center">
+                <a href="<?= base_url('noticias') ?>"
+                   class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-full transition">
+                    Ver más noticias
                 </a>
-            <?php endforeach; ?>
-        </div>
-
-        <!-- Botón para ver más noticias -->
-        <div class="mt-10 text-center">
-            <a href="<?= base_url('noticias') ?>"
-               class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-full transition">
-                Ver más noticias
-            </a>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
+
 
 <!-- Horarios de Entrenamiento -->
 <section id="horarios" class="bg-gray-50 py-16 px-6 scroll-mt-24">

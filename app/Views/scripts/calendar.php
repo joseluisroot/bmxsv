@@ -556,7 +556,7 @@
                     color: '#f87171',
                     extendedProps: {
                         descripcionHTML: `
-                                        <img src="/images/competencias/cuarta_fecha.png" class="rounded-lg mb-3 w-full" alt="Competencia Fecha 4">
+                                        <img src="/uploads/competencias/cuarta_fecha.png" class="rounded-lg mb-3 w-full" alt="Competencia Fecha 4">
                                         <p>Competencia interna para clubes locales. Habrá medallas y premiación por categoría.</p>
                                         <a href="https://docs.google.com/forms/d/e/1FAIpQLScDRITelVFIUSYcgYve_wE5kpIz1yO_taQ76viCFlNdhJoYJw/viewform" target="_blank" class="block w-fit mx-auto mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
                                           Inscribirse
