@@ -125,7 +125,6 @@
     ?>
     const atletasData = <?= json_encode($atletas) ?>;
 </script>
-
 <section id="atletas" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-10 text-center">Nuestros Atletas</h2>
@@ -499,19 +498,41 @@
 </script>
 
 <!-- Noticias -->
+<!-- Noticias -->
 <section id="noticias" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <!-- Título corregido (rojo y centrado) -->
         <h2 class="text-3xl sm:text-4xl font-display text-red-600 mb-8 text-center">Noticias</h2>
 
+        <?php
+        // Puedes pasarlas desde el controlador como $redes['facebook'] y $redes['instagram']
+        $facebookUrl  = $redes['facebook']  ?? 'https://www.facebook.com/tu_pagina';
+        $instagramUrl = $redes['instagram'] ?? 'https://www.instagram.com/tu_pagina';
+        ?>
+
         <?php if (empty($ultimasNoticias)): ?>
-            <!-- Estado vacío: mensaje amigable -->
+            <!-- Estado vacío: mensaje amigable + CTA redes -->
             <div class="bg-gray-50 border rounded-2xl p-6 text-center max-w-xl mx-auto">
                 <h3 class="text-lg font-semibold text-gray-800 mb-1">Aún no hay noticias publicadas</h3>
                 <p class="text-gray-600">
-                    Estamos preparando contenido sobre competencias, entrenos y nuestra comunidad BMX.
-                    Vuelve pronto para conocer las novedades.
+                    Estamos preparando contenido sobre competencias, entrenos y la comunidad BMX.
+                    Mientras tanto, ¡mantente al día en nuestras redes!
                 </p>
+
+                <div class="mt-4 flex items-center justify-center gap-3">
+                    <a href="https://www.facebook.com/ELSALVADORBMX/" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-full border hover:bg-gray-100 transition"
+                       aria-label="Síguenos en Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://www.instagram.com/esabicicross/" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-full border hover:bg-gray-100 transition"
+                       aria-label="Síguenos en Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                </div>
             </div>
         <?php else: ?>
             <!-- Listado de noticias -->
@@ -545,7 +566,6 @@
         <?php endif; ?>
     </div>
 </section>
-
 
 <!-- Horarios de Entrenamiento -->
 <section id="horarios" class="bg-gray-50 py-16 px-6 scroll-mt-24">

@@ -17,10 +17,10 @@
 
         <!-- Redes sociales -->
         <div class="flex justify-center space-x-6 text-xl">
-            <a href="https://www.facebook.com/BMXRaceElSalvador" target="_blank" rel="noopener" class="hover:text-red-500" aria-label="Facebook BMXSV">
+            <a href="https://www.facebook.com/ELSALVADORBMX" target="_blank" rel="noopener" class="hover:text-red-500" aria-label="Facebook BMXSV">
                 <i class="fab fa-facebook" aria-hidden="true"></i>
             </a>
-            <a href="https://www.instagram.com/BMXRaceElSalvador" target="_blank" rel="noopener" class="hover:text-red-500" aria-label="Instagram BMXSV">
+            <a href="https://www.instagram.com/esabicicross" target="_blank" rel="noopener" class="hover:text-red-500" aria-label="Instagram BMXSV">
                 <i class="fab fa-instagram" aria-hidden="true"></i>
             </a>
         </div>
