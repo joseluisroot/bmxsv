@@ -118,11 +118,6 @@
 
 <!-- Atletas -->
 <script>
-    <?php
-
-    $atletas = null;
-
-    ?>
     const atletasData = <?= json_encode($atletas) ?>;
 </script>
 <section id="atletas" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
