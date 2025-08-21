@@ -493,7 +493,6 @@
 </script>
 
 <!-- Noticias -->
-<!-- Noticias -->
 <section id="noticias" class="bg-white py-16 px-6 shadow-md scroll-mt-24">
     <div class="container mx-auto">
         <!-- Título corregido (rojo y centrado) -->

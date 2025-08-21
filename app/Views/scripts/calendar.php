@@ -850,7 +850,7 @@
             card.className = 'bg-gray-100 p-4 rounded shadow hover:shadow-lg transition block';
 
             card.innerHTML = `
-            <img src="/uploads/${a.foto}.png" alt="${a.nombres}"
+            <img src="/uploads/atletas/${a.foto}.png" alt="${a.nombres}"
                  class="mx-auto mb-3 rounded-full object-cover w-32 h-40">
             <h3 class="text-xl font-display mb-1">${a.nombres}</h3>
             <p class="text-sm text-gray-600 mb-1">Edad: ${a.edad ?? '-'} | Club: ${a.club ?? '-'}</p>
