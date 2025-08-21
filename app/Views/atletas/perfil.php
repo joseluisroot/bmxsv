@@ -10,7 +10,7 @@
             <p class="text-gray-600">Categoría: <?= esc($atleta['categoria']) ?></p>
             <p class="text-sm">Club: <?= esc($atleta['club']) ?></p>
             <p class="text-sm">Edad: <?= esc($atleta['edad']) ?> años</p>
-            <p class="text-sm">Tiempo en BMX: <?= esc($atleta['anios_bmx']) ?></p>
+            <p class="text-sm">Tiempo en BMX: <?= esc($atleta['anios_bmx']) ?> Mes</p>
 
             <?php if (!empty($redes_sociales)): ?>
                 <div class="flex justify-center gap-4 mt-4">
@@ -150,10 +150,10 @@
     <?php else: ?>
         <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center shadow-sm">
             <p class="text-gray-600 text-lg">
-                📷 Aún no hay fotos en la galería de este atleta.
+                Este atleta está comenzando su camino en BMX.
             </p>
             <p class="text-sm text-gray-500 mt-2">
-                Muy pronto compartiremos sus mejores momentos en las pistas.
+                Muy pronto veremos sus logros en imágenes 🚴‍♂️🔥
             </p>
         </div>
     <?php endif; ?>
