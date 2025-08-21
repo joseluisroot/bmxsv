@@ -143,7 +143,7 @@
                 {
                     title: 'Vacaciones Agostinas',
                     start: '2025-08-04',
-                    end: '2025-08-09',
+                    end: '2025-08-10',
                     color: '#d4c88d'
                 },
                 {
