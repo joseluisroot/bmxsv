@@ -551,7 +551,7 @@
                     }
                 },
                 {
-                    title: 'Competencia Interna - Cuarta FEcha',
+                    title: 'Competencia Interna - Cuarta Fecha',
                     start: '2025-08-31',
                     color: '#f87171',
                     extendedProps: {
