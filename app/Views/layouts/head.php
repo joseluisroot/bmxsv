@@ -52,7 +52,6 @@
 
     <!-- Fuentes y CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -60,7 +59,7 @@
 
 
     <!-- Tailwind (si no haces build local) -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <!-- Preload de imágenes críticas -->
     <link rel="preload" as="image" href="<?= base_url('images/hero.jpg') ?>" fetchpriority="high" />
