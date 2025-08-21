@@ -66,30 +66,87 @@
         </div>
     </div>
 
-    <h3 class="text-2xl font-display text-red-600 mt-8 mb-4 text-center">Galería</h3>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <?php
+    $maxVisible = 6;
+    $total = count($galeria);
+    $showMoreCount = max(0, $total - $maxVisible);
+    ?>
+    <h3 class="text-2xl font-display text-red-600 mt-8 mb-4">Galería</h3>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="galeria-grid">
         <?php foreach ($galeria as $index => $img):
             $src = base_url('/uploads/atletas/' . $atleta['slug'] . '/' . $img['imagen']);
             $alt = !empty($img['descripcion']) ? $img['descripcion'] : ($atleta['nombres'] . ' ' . $atleta['apellidos'] . ' - Foto ' . ($index + 1));
             $caption = $img['descripcion'] ?? '';
+            $isHidden = ($index >= $maxVisible);
             ?>
+
+            <?php if ($index === ($maxVisible - 1) && $showMoreCount > 0): ?>
+            <!-- Tarjeta 6 con overlay "+N fotos" -->
+            <button type="button"
+                    class="relative group bg-gray-100 rounded shadow overflow-hidden focus:outline-none focus:ring-2 focus:ring-red-500"
+                    data-toggle-galeria
+                    aria-label="Ver <?= $showMoreCount ?> fotos más">
+                <img src="<?= esc($src) ?>"
+                     alt="<?= esc($alt) ?>"
+                     class="w-full h-48 object-cover brightness-50 group-hover:brightness-75 transition"
+                     loading="lazy">
+                <span class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-white text-xl font-semibold bg-black/50 px-3 py-1 rounded-lg">
+                        +<?= $showMoreCount ?> fotos
+                    </span>
+                </span>
+            </button>
+
+        <?php elseif ($index < $maxVisible): ?>
+            <!-- Primeras 5 tarjetas normales -->
             <button type="button"
                     class="group bg-gray-100 rounded shadow overflow-hidden focus:outline-none focus:ring-2 focus:ring-red-500"
                     data-gallery-item
                     data-src="<?= esc($src) ?>"
                     data-alt="<?= esc($alt) ?>"
-                    data-caption="<?= esc($caption) ?>"
-                    aria-label="Ver imagen ampliada: <?= esc($alt) ?>">
-                <img src="<?= $src ?>"
-                     alt="<?= esc($alt) ?>"
+                    data-caption="<?= esc($caption) ?>">
+                <img src="<?= esc($src) ?>" alt="<?= esc($alt) ?>"
                      class="w-full h-48 object-cover transition group-hover:opacity-90"
                      loading="lazy" referrerpolicy="no-referrer">
                 <?php if (!empty($img['descripcion'])): ?>
                     <p class="text-sm text-gray-600 p-2"><?= esc($img['descripcion']) ?></p>
                 <?php endif; ?>
             </button>
+
+        <?php else: ?>
+            <!-- Resto de tarjetas ocultas inicialmente -->
+            <button type="button"
+                    class="group bg-gray-100 rounded shadow overflow-hidden focus:outline-none focus:ring-2 focus:ring-red-500 <?= $isHidden ? 'hidden' : '' ?>"
+                    data-gallery-item
+                    data-src="<?= esc($src) ?>"
+                    data-alt="<?= esc($alt) ?>"
+                    data-caption="<?= esc($caption) ?>"
+                    data-galeria-hidden>
+                <img src="<?= esc($src) ?>" alt="<?= esc($alt) ?>"
+                     class="w-full h-48 object-cover transition group-hover:opacity-90"
+                     loading="lazy" referrerpolicy="no-referrer">
+                <?php if (!empty($img['descripcion'])): ?>
+                    <p class="text-sm text-gray-600 p-2"><?= esc($img['descripcion']) ?></p>
+                <?php endif; ?>
+            </button>
+        <?php endif; ?>
+
         <?php endforeach; ?>
     </div>
+
+    <?php if ($showMoreCount > 0): ?>
+        <div class="mt-4 text-center">
+            <button type="button" id="btn-toggle-galeria"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 hover:border-gray-400 text-sm font-semibold">
+                Mostrar todas
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+        </div>
+    <?php endif; ?>
+
 
     <!-- Lightbox Modal -->
     <div id="lightbox"
@@ -235,5 +292,28 @@
             imgEl.addEventListener('dragstart', (e) => e.preventDefault());
         })();
     </script>
+
+    <script>
+        (function () {
+            const btnOverlay = document.querySelector('[data-toggle-galeria]');
+            const btnToggle = document.getElementById('btn-toggle-galeria');
+            const hiddenCards = document.querySelectorAll('[data-galeria-hidden]');
+            let expanded = false;
+
+            function setExpanded(state) {
+                expanded = state;
+                hiddenCards.forEach(el => el.classList.toggle('hidden', !expanded));
+                if (btnToggle) {
+                    btnToggle.innerHTML = expanded
+                        ? `Mostrar menos <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>`
+                        : `Mostrar todas <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
+                }
+            }
+
+            if (btnOverlay) btnOverlay.addEventListener('click', () => setExpanded(true));
+            if (btnToggle) btnToggle.addEventListener('click', () => setExpanded(!expanded));
+        })();
+    </script>
+
 
 </main>
