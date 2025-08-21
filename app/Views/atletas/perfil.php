@@ -70,7 +70,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <?php foreach ($galeria as $img): ?>
             <div class="bg-gray-100 rounded shadow overflow-hidden">
-                <img src="<?= base_url('/uploads/galeria/' . $img['imagen']) ?>" alt="<?= esc($img['descripcion']) ?>" class="w-full h-48 object-cover">
+                <img src="<?= base_url('/uploads/atletas/' . $atleta['slug'] . '/' . $img['imagen']) ?>" alt="<?= esc($img['descripcion']) ?>" class="w-full h-48 object-cover">
                 <?php if (!empty($img['descripcion'])): ?>
                     <p class="text-sm text-gray-600 p-2"><?= esc($img['descripcion']) ?></p>
                 <?php endif; ?>
