@@ -2,7 +2,7 @@
     <div class="grid md:grid-cols-3 gap-8">
         <!-- Columna izquierda: Foto e info básica -->
         <div class="md:col-span-1 text-center">
-            <img src="<?= base_url('/uploads/' . $atleta['foto'] . '.png') ?>"
+            <img src="<?= base_url('/uploads/atletas/' . $atleta['foto'] . '.png') ?>"
                  alt="<?= esc($atleta['nombres'] . ' ' . $atleta['apellidos']) ?>"
                  class="rounded-full mx-auto mb-4"
                  style="width: 150px; height: 200px;">
@@ -10,7 +10,7 @@
             <p class="text-gray-600">Categoría: <?= esc($atleta['categoria']) ?></p>
             <p class="text-sm">Club: <?= esc($atleta['club']) ?></p>
             <p class="text-sm">Edad: <?= esc($atleta['edad']) ?> años</p>
-            <p class="text-sm">Años en BMX: <?= esc($atleta['anios_bmx']) ?></p>
+            <p class="text-sm">Tiempo en BMX: <?= esc($atleta['anios_bmx']) ?></p>
 
             <?php if (!empty($redes_sociales)): ?>
                 <div class="flex justify-center gap-4 mt-4">
