@@ -12,7 +12,7 @@
                 <ul class="list-disc ml-6 mt-2">
                     <li><strong>Lunes, miércoles y viernes:</strong> 4:00 p. m. – 6:00 p. m. (entrenamiento guiado por <strong>Federico Polo</strong>).</li>
                     <li><strong>Martes y jueves:</strong> entrenamiento libre con <strong>supervisión de un adulto</strong>.</li>
-                    <li><strong>Sábado:</strong> 9:00 a. m. – 12:00 m. con <strong>Hugo Rubio</strong> (semillero, desde balance hasta jóvenes +12 que inician). <strong>Federico Polo</strong> atiende a los más grandes.</li>
+                    <li><strong>Sábado:</strong> 9:00 a. m. – 11:30 m. con <strong>Hugo Rubio</strong> (semillero, desde balance hasta jóvenes +12 que inician). <strong>Federico Polo</strong> atiende a los más grandes.</li>
                 </ul>
             </div>
         </details>
