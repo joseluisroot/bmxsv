@@ -12,6 +12,7 @@
             <a href="#ranking" class="hover:underline">Ranking</a>
             <a href="#galeria" class="hover:underline">Galería</a>
             <a href="#noticias" class="hover:underline">Noticias</a>
+            <a href="<?= base_url('faq') ?>" class="hover:text-red-600 w-full">Preguntas Frecuentes</a>
             <a href="#contacto" class="hover:underline">Contacto</a>
         </nav>
 
@@ -37,12 +38,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/locales/es.global.min.js"></script>
 <?= $calendarScript ?? '' ?>
 <?= $rankingScript ?? '' ?>
+<?= $faqScript ?? '' ?>
 
 <button id="btnArriba"
         class="fixed bottom-6 right-6 bg-red-600 text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition-opacity opacity-0 pointer-events-none z-50"
         aria-label="Volver arriba">
     <i class="fas fa-arrow-up" aria-hidden="true"></i>
 </button>
+
+
+
 
 </body>
 </html>

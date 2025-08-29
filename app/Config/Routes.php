@@ -28,3 +28,4 @@ $routes->get('ranking/periodo/(:num)', 'RankingController::periodo/$1');
 $routes->get('galeria', 'GaleriaController::index');
 $routes->get('galeria/album/(:segment)', 'GaleriaController::album/$1');
 
+$routes->get('faq', 'Pages::faq');
