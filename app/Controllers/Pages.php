@@ -15,7 +15,7 @@ class Pages extends BaseController
         ];
 
         return view('layouts/head', $data)
-            . view('layouts/header')
+            . view('layouts/header_simple')
             . view('pages/faq', $data)
             . view('layouts/footer');
     }
