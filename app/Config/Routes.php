@@ -29,3 +29,6 @@ $routes->get('galeria', 'GaleriaController::index');
 $routes->get('galeria/album/(:segment)', 'GaleriaController::album/$1');
 
 $routes->get('faq', 'Pages::faq');
+
+$routes->get('juegos/focus-numbers', 'JuegosController::focusNumbers');
+
