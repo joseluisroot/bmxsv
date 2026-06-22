@@ -32,3 +32,36 @@ $routes->get('faq', 'Pages::faq');
 
 $routes->get('juegos/focus-numbers', 'JuegosController::focusNumbers');
 
+$routes->group('api', static function ($routes) {
+    $routes->post('timing/pass', 'Api\TimingController::pass');
+    $routes->get('timing/hit/(:num)/summary', 'Api\TimingController::summary/$1');
+    $routes->get('timing/session/(:num)/summary', 'Api\TimingController::sessionSummary/$1');
+
+    $routes->get('performance/athlete/(:num)/setup-comparison', 'Api\PerformanceController::setupComparison/$1');
+    $routes->get('performance/athlete/(:num)/best-hits', 'Api\PerformanceController::bestHits/$1');
+    $routes->get('performance/athlete/(:num)/history', 'Api\PerformanceController::history/$1');
+    $routes->get('performance/athlete/(:num)/dashboard', 'Api\PerformanceController::dashboard/$1');
+    $routes->get('performance/session/(:num)/ranking', 'Api\PerformanceController::sessionRanking/$1');
+
+    $routes->get('performance/athlete/(:num)/full-dashboard', 'Api\PerformanceController::fullDashboard/$1');
+    $routes->get('performance/session/(:num)/coach-dashboard','Api\PerformanceController::coachDashboard/$1');
+
+    $routes->get('performance/session/(:num)/stream','Api\PerformanceController::liveSessionStream/$1');
+    $routes->get('performance/hit/(:num)/compare/(:num)','Api\PerformanceController::compareHits/$1/$2');
+
+    $routes->get('performance/athlete/(:num)/compare/(:num)','Api\PerformanceController::compareAthletes/$1/$2');
+
+});
+
+$routes->get('performance/atleta/(:num)', 'PerformanceController::atleta/$1');
+$routes->get('performance/sesion/(:num)/live', 'PerformanceController::sesionLive/$1');
+$routes->get('performance/coach/(:num)', 'PerformanceController::coach/$1');
+$routes->get('performance/hit/(:num)/compare/(:num)', 'PerformanceController::compareHits/$1/$2');
+$routes->get('performance/athlete/(:num)/compare/(:num)',
+    'PerformanceController::compareAthletes/$1/$2'
+);
+
+
+
+
+
