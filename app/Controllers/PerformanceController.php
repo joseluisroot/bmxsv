@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class PerformanceController extends BaseController
 {
@@ -62,6 +61,14 @@ class PerformanceController extends BaseController
         ]);
     }
 
+    public function sessions()
+    {
+        return view('Performance/sessions', [
+            'title' => 'BTPS Session Manager',
+            'pageTitle' => 'BTPS Session Manager',
+        ]);
+    }
+
     public function sessionControl($sessionId)
     {
         return view('Performance/session_control', [
@@ -79,8 +86,4 @@ class PerformanceController extends BaseController
             'pageTitle' => 'Sensor Simulator',
         ]);
     }
-
-
-
-
 }
