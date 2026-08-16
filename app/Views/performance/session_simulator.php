@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/Performance') ?>
+<?= $this->extend('layouts/performance') ?>
 
 <?= $this->section('content') ?>
 
@@ -17,23 +17,13 @@
 <div class="mt-6 bg-slate-900 border border-slate-800 rounded-xl p-5">
     <h3 class="text-xl font-bold mb-4">Simulación multi atleta</h3>
     <div id="multiHitList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-    <button id="multiRunBtn" type="button" class="mt-4 bg-yellow-600 hover:bg-yellow-500 px-5 py-2 rounded-lg font-bold">
-        🏁 Simular múltiples atletas
-    </button>
+    <button id="multiRunBtn" type="button" class="mt-4 bg-yellow-600 hover:bg-yellow-500 px-5 py-2 rounded-lg font-bold">🏁 Simular múltiples atletas</button>
 </div>
 
 <div class="mt-4 flex flex-wrap gap-3">
-    <button id="autoRunBtn" type="button" class="bg-green-600 hover:bg-green-500 px-5 py-2 rounded-lg font-bold">
-        ▶ Simular carrera completa
-    </button>
-
-    <button id="createNextHitBtn" type="button" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-lg font-bold">
-        ➕ Nuevo hit para atleta seleccionado
-    </button>
-
-    <button id="clearLogBtn" type="button" class="bg-slate-700 hover:bg-slate-600 px-5 py-2 rounded-lg font-bold">
-        Limpiar log
-    </button>
+    <button id="autoRunBtn" type="button" class="bg-green-600 hover:bg-green-500 px-5 py-2 rounded-lg font-bold">▶ Simular carrera completa</button>
+    <button id="createNextHitBtn" type="button" class="bg-cyan-600 hover:bg-cyan-500 px-5 py-2 rounded-lg font-bold">➕ Nuevo hit para atleta seleccionado</button>
+    <button id="clearLogBtn" type="button" class="bg-slate-700 hover:bg-slate-600 px-5 py-2 rounded-lg font-bold">Limpiar log</button>
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
@@ -47,6 +37,6 @@
 
 <div id="simulatorLog" class="mt-6 bg-slate-900 border border-slate-800 rounded-xl p-5"></div>
 
-<script src="<?= base_url('assets/js/Performance/session-simulator.js') ?>"></script>
+<script src="<?= base_url('assets/js/performance/session-simulator.js') ?>"></script>
 
 <?= $this->endSection() ?>
