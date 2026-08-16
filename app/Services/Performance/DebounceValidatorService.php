@@ -1,13 +1,12 @@
 <?php
 
-namespace app\Services\Performance;
+namespace App\Services\Performance;
 
 use App\Repositories\Performance\TimingRepository;
 
 class DebounceValidatorService
 {
     protected TimingRepository $timingRepository;
-
     protected int $debounceMilliseconds = 500;
 
     public function __construct()
@@ -15,10 +14,8 @@ class DebounceValidatorService
         $this->timingRepository = new TimingRepository();
     }
 
-    public function validate(
-        int $hitId,
-        int $incomingTimestamp
-    ): array {
+    public function validate(int $hitId, int $incomingTimestamp): array
+    {
         $lastEvent = $this->timingRepository->getLastEventByHit($hitId);
 
         if (!$lastEvent) {
