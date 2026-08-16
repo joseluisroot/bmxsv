@@ -10,6 +10,7 @@ class RegistroTiempoModel extends Model
     protected $primaryKey = 'id';
 
     protected $allowedFields = [
+        'event_id',
         'hit_entrenamiento_id',
         'punto_control_id',
         'dispositivo_tiempo_id',
