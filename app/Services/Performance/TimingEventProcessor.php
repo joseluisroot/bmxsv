@@ -6,9 +6,9 @@ class TimingEventProcessor
 {
     protected HitResolverService $hitResolver;
 
-    public function __construct()
+    public function __construct(?HitResolverService $hitResolver = null)
     {
-        $this->hitResolver = new HitResolverService();
+        $this->hitResolver = $hitResolver ?? new HitResolverService();
     }
 
     public function process(array $payload): array
