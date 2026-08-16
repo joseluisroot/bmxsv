@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/performance') ?>
+<?= $this->extend('layouts/Performance') ?>
 
 <?= $this->section('content') ?>
 
@@ -70,6 +70,6 @@
 
     </div>
 
-    <script src="<?= base_url('assets/js/performance/compare-hits.js') ?>"></script>
+    <script src="<?= base_url('assets/js/Performance/compare-hits.js') ?>"></script>
 
 <?= $this->endSection() ?>

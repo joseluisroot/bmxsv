@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/performance') ?>
+<?= $this->extend('layouts/Performance') ?>
 
 <?= $this->section('content') ?>
 
@@ -43,6 +43,24 @@
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
                 <p class="text-slate-400 text-sm">Hits válidos</p>
                 <h2 id="validHits" class="text-3xl font-bold">--</h2>
+            </div>
+        </section>
+
+        <section id="progressCard" class="bg-slate-900 border border-slate-800 rounded-xl p-5 hidden">
+            <h3 class="text-xl font-bold mb-4">Evolución del Atleta</h3>
+            <div id="progressContent" class="text-slate-300"></div>
+        </section>
+
+        <section id="trendCard" class="bg-slate-900 border border-slate-800 rounded-xl p-5 hidden">
+            <h3 class="text-xl font-bold mb-4">Tendencia y Proyección</h3>
+            <div id="trendContent" class="text-slate-300"></div>
+        </section>
+
+        <section id="progressChartCard" class="bg-slate-900 border border-slate-800 rounded-xl p-5 hidden">
+            <h3 class="text-xl font-bold mb-4">Gráfica de evolución mensual</h3>
+
+            <div class="relative h-72 md:h-80">
+                <canvas id="progressChart"></canvas>
             </div>
         </section>
 
@@ -141,6 +159,6 @@
 
     </div>
 
-    <script src="<?= base_url('assets/js/performance/athlete-dashboard.js') ?>"></script>
+    <script src="<?= base_url('assets/js/Performance/athlete-dashboard.js') ?>"></script>
 
 <?= $this->endSection() ?>

@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/performance') ?>
+<?= $this->extend('layouts/Performance') ?>
 
 <?= $this->section('content') ?>
 
@@ -165,7 +165,7 @@
 
     </div>
 
-    <script src="<?= base_url('assets/js/performance/track-map.js') ?>"></script>
-    <script src="<?= base_url('assets/js/performance/coach-dashboard.js') ?>"></script>
+    <script src="<?= base_url('assets/js/Performance/track-map.js') ?>"></script>
+    <script src="<?= base_url('assets/js/Performance/coach-dashboard.js') ?>"></script>
 
 <?= $this->endSection() ?>

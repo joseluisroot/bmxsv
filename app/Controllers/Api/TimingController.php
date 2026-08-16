@@ -17,6 +17,14 @@ class TimingController extends BaseController
     {
         $request = $this->request->getJSON(true);
 
+        $processor = new \App\Services\Performance\TimingEventProcessor();
+
+        $result = $processor->process($request);
+
+        return $this->response
+            ->setStatusCode($result['status_code'] ?? 200)
+            ->setJSON($result);
+
         if (!$request) {
             return $this->response
                 ->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
@@ -98,6 +106,30 @@ class TimingController extends BaseController
                 ]);
         }
 
+        if ($hit['estado'] === 'completado') {
+            return $this->response
+                ->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'Este hit ya está completado. Crea un nuevo hit para una nueva pasada.',
+                ]);
+        }
+
+        $existingRecord = $registroModel
+            ->where('hit_entrenamiento_id', (int) $request['hit_entrenamiento_id'])
+            ->where('punto_control_id', (int) $punto['id'])
+            ->first();
+
+        if ($existingRecord) {
+            return $this->response
+                ->setStatusCode(ResponseInterface::HTTP_CONFLICT)
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'Este punto de control ya fue registrado para este hit.',
+                    'existing_record_id' => (int) $existingRecord['id'],
+                ]);
+        }
+
         $payloadRaw = [
             'device_code'       => $request['device_code'],
             'timing_point_code' => $request['timing_point_code'],
@@ -119,6 +151,13 @@ class TimingController extends BaseController
         ]);
 
         $hitUpdated = $hitModel->find((int) $request['hit_entrenamiento_id']);
+
+        if ($punto['codigo'] === 'TP06') {
+            $hitModel->update((int) $request['hit_entrenamiento_id'], [
+                'estado' => 'completado',
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
 
         $currentPosition = [
             'point_code'   => $punto['codigo'],

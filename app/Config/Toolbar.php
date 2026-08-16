@@ -16,7 +16,7 @@ use CodeIgniter\Debug\Toolbar\Collectors\Views;
  * Debug Toolbar
  * --------------------------------------------------------------------------
  *
- * The Debug Toolbar provides a way to see information about the performance
+ * The Debug Toolbar provides a way to see information about the Performance
  * and state of your application during that page display. By default it will
  * NOT be displayed under production environments, and will only display if
  * `CI_DEBUG` is true, since if it's not, there's not much to display anyway.
@@ -96,7 +96,7 @@ class Toolbar extends BaseConfig
      *
      * Contains an array of directories that will be watched for changes and
      * used to determine if the hot-reload feature should reload the page or not.
-     * We restrict the values to keep performance as high as possible.
+     * We restrict the values to keep Performance as high as possible.
      *
      * NOTE: The ROOTPATH will be prepended to all values.
      *

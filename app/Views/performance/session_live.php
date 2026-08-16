@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/performance') ?>
+<?= $this->extend('layouts/Performance') ?>
 
 <?= $this->section('content') ?>
 
@@ -89,6 +89,6 @@
 
     </div>
 
-    <script src="<?= base_url('assets/js/performance/session-live.js') ?>"></script>
+    <script src="<?= base_url('assets/js/Performance/session-live.js') ?>"></script>
 
 <?= $this->endSection() ?>

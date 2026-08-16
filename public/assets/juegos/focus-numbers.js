@@ -38,7 +38,7 @@
     let timerId = null;
     let running = false;
 
-    let prevClickTime = null; // performance.now() ms
+    let prevClickTime = null; // Performance.now() ms
     let clickLog = [];        // [{num:'00', t_ms:..., delta_ms:...}]
 
     // ---- Utilidades

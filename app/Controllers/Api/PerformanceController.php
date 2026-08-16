@@ -59,6 +59,9 @@ class PerformanceController extends BaseController
 
     public function dashboard($athleteId)
     {
+
+
+
         $analyticsService = new PerformanceAnalyticsService();
 
         $data = $analyticsService->getAthleteDashboard((int)$athleteId);
@@ -114,11 +117,11 @@ class PerformanceController extends BaseController
     private function buildNestedMetricRanking(array $items, string $metricKey): array
     {
         $ranking = array_filter($items, function ($item) use ($metricKey) {
-            return isset($item['performance'][$metricKey]) && $item['performance'][$metricKey] !== null;
+            return isset($item['Performance'][$metricKey]) && $item['Performance'][$metricKey] !== null;
         });
 
         usort($ranking, function ($a, $b) use ($metricKey) {
-            return $a['performance'][$metricKey] <=> $b['performance'][$metricKey];
+            return $a['Performance'][$metricKey] <=> $b['Performance'][$metricKey];
         });
 
         $position = 1;
@@ -130,7 +133,7 @@ class PerformanceController extends BaseController
                 'numero_hit' => $item['numero_hit'],
                 'athlete' => $item['athlete'],
                 'bike_setup' => $item['bike_setup'],
-                'seconds' => $item['performance'][$metricKey],
+                'seconds' => $item['Performance'][$metricKey],
             ];
         }, array_values($ranking));
     }
@@ -262,4 +265,143 @@ class PerformanceController extends BaseController
         return $this->response->setJSON($data);
     }
 
+    public function clubRanking()
+    {
+        $analyticsService = new PerformanceAnalyticsService();
+
+        $data = $analyticsService->getClubRanking();
+
+        if (empty($data['success'])) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON($data);
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function athleteProgress($athleteId)
+    {
+        $analyticsService = new PerformanceAnalyticsService();
+
+        $data = $analyticsService->getAthleteProgress((int) $athleteId);
+
+        if (empty($data['success'])) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON($data);
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function activeSession()
+    {
+        $analyticsService = new PerformanceAnalyticsService();
+
+        $data = $analyticsService->getActiveSession();
+
+        if (empty($data['success'])) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON($data);
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function updateSessionStatus($sessionId)
+    {
+        $request = $this->request->getJSON(true);
+
+        if (empty($request['estado'])) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'success' => false,
+                'message' => 'El campo estado es requerido.',
+            ]);
+        }
+
+        $analyticsService = new PerformanceAnalyticsService();
+
+        $data = $analyticsService->updateSessionStatus(
+            (int) $sessionId,
+            $request['estado']
+        );
+
+        if (empty($data['success'])) {
+            return $this->response->setStatusCode(400)->setJSON($data);
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function createSessionHit($sessionId)
+    {
+        $request = $this->request->getJSON(true);
+
+        if (
+            empty($request['athlete_id']) ||
+            empty($request['configuration_id'])
+        ) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON([
+                    'success' => false,
+                    'message' => 'athlete_id y configuration_id son requeridos.',
+                ]);
+        }
+
+        $analyticsService = new PerformanceAnalyticsService();
+
+        $data = $analyticsService->createSessionHit(
+            (int)$sessionId,
+            (int)$request['athlete_id'],
+            (int)$request['configuration_id'],
+            $request['notas_coach'] ?? null,
+            $request['sensacion_atleta'] ?? null
+        );
+
+        if (!$data['success']) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON($data);
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+
+    public function sessionHits($sessionId)
+    {
+        $analyticsService = new PerformanceAnalyticsService();
+
+        $data = $analyticsService->getSessionHits((int) $sessionId);
+
+        if (empty($data['success'])) {
+            return $this->response
+                ->setStatusCode(404)
+                ->setJSON($data);
+        }
+
+        return $this->response->setJSON($data);
+    }
+
+    public function athletes()
+    {
+
+        $service = new PerformanceAnalyticsService();
+
+        return $this->response->setJSON(
+            $service->getAthletes()
+        );
+    }
+
+    public function configurations()
+    {
+        $service = new PerformanceAnalyticsService();
+
+        return $this->response->setJSON(
+            $service->getConfigurations()
+        );
+    }
 }

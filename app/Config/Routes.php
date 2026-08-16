@@ -50,16 +50,28 @@ $routes->group('api', static function ($routes) {
     $routes->get('performance/hit/(:num)/compare/(:num)','Api\PerformanceController::compareHits/$1/$2');
 
     $routes->get('performance/athlete/(:num)/compare/(:num)','Api\PerformanceController::compareAthletes/$1/$2');
+    $routes->get('performance/club/ranking', 'Api\PerformanceController::clubRanking');
+    $routes->get('performance/athlete/(:num)/progress','Api\PerformanceController::athleteProgress/$1');
+
+    $routes->get('performance/session/active', 'Api\PerformanceController::activeSession');
+
+    $routes->post('performance/session/(:num)/status', 'Api\PerformanceController::updateSessionStatus/$1');
+    $routes->post('performance/session/(:num)/hit', 'Api\PerformanceController::createSessionHit/$1');
+
+    $routes->get('performance/session/(:num)/hits', 'Api\PerformanceController::sessionHits/$1');
+    $routes->get('performance/athletes', 'Api\PerformanceController::athletes');
+    $routes->get('performance/configurations', 'Api\PerformanceController::configurations');
 
 });
 
 $routes->get('performance/atleta/(:num)', 'PerformanceController::atleta/$1');
-$routes->get('performance/sesion/(:num)/live', 'PerformanceController::sesionLive/$1');
+$routes->get('performance/session/(:num)/live', 'PerformanceController::sesionLive/$1');
 $routes->get('performance/coach/(:num)', 'PerformanceController::coach/$1');
 $routes->get('performance/hit/(:num)/compare/(:num)', 'PerformanceController::compareHits/$1/$2');
-$routes->get('performance/athlete/(:num)/compare/(:num)',
-    'PerformanceController::compareAthletes/$1/$2'
-);
+$routes->get('performance/athlete/(:num)/compare/(:num)','PerformanceController::compareAthletes/$1/$2');
+$routes->get('performance/club/ranking', 'PerformanceController::clubRanking');
+$routes->get('performance/session/(:num)/control','PerformanceController::sessionControl/$1');
+$routes->get('performance/session/(:num)/simulator','PerformanceController::sessionSimulator/$1');
 
 
 

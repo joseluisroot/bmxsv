@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\AtletaModel;
+use App\Models\ConfiguracionBicicletaModel;
 use App\Models\HitEntrenamientoModel;
 use App\Models\RegistroTiempoModel;
+use App\Models\SesionEntrenamientoModel;
+use App\Services\Performance\HitValidatorService;
 
 class PerformanceAnalyticsService
 {
@@ -217,6 +221,7 @@ class PerformanceAnalyticsService
                     'nombre' => $hit['atleta_nombre'],
                 ],
                 'bike_setup' => [
+                    'configuration_id' => (int) $hit['configuracion_bicicleta_id'],
                     'bicicleta' => trim(($hit['marca'] ?? '') . ' ' . ($hit['modelo'] ?? '')),
                     'plato' => (int) $hit['plato'],
                     'pinon' => $hit['pinon'] !== null ? (int) $hit['pinon'] : null,
@@ -306,7 +311,7 @@ class PerformanceAnalyticsService
             'records_count' => count($analysis['records']),
             'records' => $analysis['records'],
             'splits' => $analysis['splits'],
-            'performance' => $analysis['performance'],
+            'performance' => $analysis['Performance'],
         ];
     }
 
@@ -338,17 +343,22 @@ class PerformanceAnalyticsService
         }
 
         $grouped = [];
+        $hitValidator = new HitValidatorService();
 
         foreach ($hits as $hit) {
 
-            $analysis = $this->buildHitAnalysis((int) $hit['id']);
+            $summary = $this->getHitSummary((int) $hit['id']);
 
-            if (!$analysis || $analysis['total_seconds'] === null) {
+            if (empty($summary['success'])) {
                 continue;
             }
 
-            $totalSeconds = $analysis['total_seconds'];
-            $performance  = $analysis['performance'];
+            if (!$hitValidator->isValid($summary)) {
+                continue;
+            }
+
+            $totalSeconds = (float) $summary['total_seconds'];
+            $performance  = $summary['performance'];
 
             $key =
                 'plato_' .
@@ -462,11 +472,16 @@ class PerformanceAnalyticsService
         }
 
         $result = [];
+        $hitValidator = new HitValidatorService();
 
         foreach ($hits as $hit) {
             $summary = $this->getHitSummary((int) $hit['id']);
 
             if (empty($summary['success'])) {
+                continue;
+            }
+
+            if (!$hitValidator->isValid($summary)) {
                 continue;
             }
 
@@ -536,11 +551,16 @@ class PerformanceAnalyticsService
         }
 
         $history = [];
+        $hitValidator = new HitValidatorService();
 
         foreach ($hits as $hit) {
             $summary = $this->getHitSummary((int) $hit['id']);
 
             if (empty($summary['success'])) {
+                continue;
+            }
+
+            if (!$hitValidator->isValid($summary)) {
                 continue;
             }
 
@@ -558,6 +578,7 @@ class PerformanceAnalyticsService
                 ],
                 'total_seconds' => $summary['total_seconds'],
                 'performance' => $summary['performance'],
+                'validation_status' => $hitValidator->classify($summary),
             ];
         }
 
@@ -587,15 +608,33 @@ class PerformanceAnalyticsService
             ];
         }
 
-        $history = $historyData['history'];
+        $history = array_values(array_filter(
+            $historyData['history'],
+            function ($item) {
+                return isset($item['total_seconds'])
+                    && $item['total_seconds'] !== null
+                    && is_numeric($item['total_seconds'])
+                    && (float) $item['total_seconds'] > 0;
+            }
+        ));
+
+        if (empty($history)) {
+            return [
+                'success' => false,
+                'message' => 'No hay hits válidos con tiempo total.',
+            ];
+        }
 
         usort($history, function ($a, $b) {
-            return $a['total_seconds'] <=> $b['total_seconds'];
+            return (float) $a['total_seconds'] <=> (float) $b['total_seconds'];
         });
 
         $bestHit = $history[0];
 
-        $totalTimes = array_column($history, 'total_seconds');
+        $totalTimes = array_map(
+            fn ($item) => (float) $item['total_seconds'],
+            $history
+        );
 
         $averageTime = round(
             array_sum($totalTimes) / count($totalTimes),
@@ -614,8 +653,8 @@ class PerformanceAnalyticsService
             'summary' => [
                 'valid_hits' => count($history),
                 'average_time' => $averageTime,
-                'best_time' => $bestHit['total_seconds'],
-                'last_time' => $lastHit['total_seconds'],
+                'best_time' => round((float) $bestHit['total_seconds'], 3),
+                'last_time' => round((float) $lastHit['total_seconds'], 3),
             ],
             'best_hit' => $bestHit,
             'last_hit' => $lastHit,
@@ -1048,6 +1087,352 @@ class PerformanceAnalyticsService
         ];
 
         return $insights;
+    }
+
+    public function getClubRanking(): array
+    {
+        $atletaModel = new AtletaModel();
+
+        $athletes = $atletaModel
+            ->select('id, nombres')
+            ->orderBy('nombres', 'ASC')
+            ->findAll();
+
+        if (empty($athletes)) {
+            return [
+                'success' => false,
+                'message' => 'No hay atletas registrados.',
+            ];
+        }
+
+        $ranking = [];
+
+        foreach ($athletes as $athlete) {
+            $dashboard = $this->getAthleteDashboard((int) $athlete['id']);
+
+            if (empty($dashboard['success'])) {
+                continue;
+            }
+
+            $performanceAverage = $this->calculateAthletePerformanceAverage(
+                (int) $athlete['id']
+            );
+
+            $ranking[] = [
+                'athlete' => [
+                    'id' => (int) $athlete['id'],
+                    'nombre' => $athlete['nombres'],
+                ],
+                'valid_hits' => $dashboard['summary']['valid_hits'] ?? 0,
+                'best_time' => $dashboard['summary']['best_time'] ?? null,
+                'average_time' => $dashboard['summary']['average_time'] ?? null,
+                'last_time' => $dashboard['summary']['last_time'] ?? null,
+                'performance_average' => $performanceAverage,
+            ];
+        }
+
+        if (empty($ranking)) {
+            return [
+                'success' => false,
+                'message' => 'No hay atletas con datos suficientes para ranking.',
+            ];
+        }
+
+        usort($ranking, function ($a, $b) {
+            return $a['best_time'] <=> $b['best_time'];
+        });
+
+        $position = 1;
+
+        foreach ($ranking as &$item) {
+            $item['position'] = $position++;
+        }
+
+        return [
+            'success' => true,
+            'generated_at' => date('Y-m-d H:i:s'),
+            'ranking_type' => 'club_general',
+            'athletes_count' => count($ranking),
+            'ranking' => $ranking,
+        ];
+    }
+
+    public function getAthleteProgress(int $athleteId): array
+    {
+        $history = $this->getAthleteHistory($athleteId);
+
+        if (empty($history['success']) || empty($history['history'])) {
+            return [
+                'success' => false,
+                'message' => 'No hay datos suficientes para calcular evolución.',
+            ];
+        }
+
+        $grouped = [];
+
+        foreach ($history['history'] as $record) {
+            $month = date('Y-m', strtotime($record['date']));
+
+            if (!isset($grouped[$month])) {
+                $grouped[$month] = [
+                    'month' => $month,
+                    'times' => [],
+                    'hits_count' => 0,
+                ];
+            }
+
+            $grouped[$month]['times'][] = $record['total_seconds'];
+            $grouped[$month]['hits_count']++;
+        }
+
+        $progress = [];
+
+        foreach ($grouped as $month => $item) {
+            $progress[] = [
+                'month' => $month,
+                'best_time' => round(min($item['times']), 3),
+                'average_time' => round(array_sum($item['times']) / count($item['times']), 3),
+                'hits_count' => $item['hits_count'],
+            ];
+        }
+
+        usort($progress, function ($a, $b) {
+            return strcmp($a['month'], $b['month']);
+        });
+
+        $first = $progress[0];
+        $last = $progress[count($progress) - 1];
+
+
+        $monthsCount = count($progress);
+
+        $monthlyImprovement = null;
+        $nextMonthProjection = null;
+        $threeMonthProjection = null;
+
+        if ($monthsCount >= 2) {
+
+            $monthlyImprovement = round(
+                ($last['best_time'] - $first['best_time']) / ($monthsCount - 1),
+                3
+            );
+
+            $nextMonthProjection = round(
+                $last['best_time'] + $monthlyImprovement,
+                3
+            );
+
+            $threeMonthProjection = round(
+                $last['best_time'] + ($monthlyImprovement * 3),
+                3
+            );
+        }
+
+        $secondsImprovement = round($last['best_time'] - $first['best_time'], 3);
+
+        $percentImprovement = $first['best_time'] > 0
+            ? round(($secondsImprovement / $first['best_time']) * 100, 2)
+            : null;
+
+        return [
+            'success' => true,
+            'athlete_id' => $athleteId,
+            'progress' => $progress,
+            'improvement' => [
+                'seconds' => $secondsImprovement,
+                'percent' => $percentImprovement,
+                'status' => $secondsImprovement < 0 ? 'improved' : ($secondsImprovement > 0 ? 'worse' : 'same'),
+            ],
+            'trend' => [
+                'monthly_improvement' => $monthlyImprovement,
+                'direction' => $monthlyImprovement < 0
+                    ? 'improving'
+                    : ($monthlyImprovement > 0 ? 'declining' : 'stable'),
+            ],
+            'projection' => [
+                'next_month_best_time' => $nextMonthProjection,
+                'three_month_projection' => $threeMonthProjection,
+            ],
+        ];
+    }
+
+    public function getActiveSession(): array
+    {
+        $db = \Config\Database::connect();
+
+        $session = $db->table('sesiones_entrenamiento')
+            ->where('estado', 'abierta')
+            ->orderBy('fecha', 'DESC')
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->getRowArray();
+
+        if (!$session) {
+            return [
+                'success' => false,
+                'message' => 'No hay sesión activa.',
+            ];
+        }
+
+        $summary = $this->getSessionSummary((int) $session['id']);
+        $ranking = $this->getSessionRanking((int) $session['id']);
+
+        return [
+            'success' => true,
+            'session' => $session,
+            'summary' => !empty($summary['success']) ? $summary : null,
+            'ranking' => !empty($ranking['success']) ? $ranking : null,
+        ];
+    }
+
+    public function updateSessionStatus(int $sessionId, string $status): array
+    {
+        $allowed = ['abierta', 'finalizada', 'cancelada'];
+
+        if (!in_array($status, $allowed, true)) {
+            return [
+                'success' => false,
+                'message' => 'Estado de sesión no permitido.',
+            ];
+        }
+
+        $db = \Config\Database::connect();
+
+        $session = $db->table('sesiones_entrenamiento')
+            ->where('id', $sessionId)
+            ->get()
+            ->getRowArray();
+
+        if (!$session) {
+            return [
+                'success' => false,
+                'message' => 'Sesión no encontrada.',
+            ];
+        }
+
+        $db->table('sesiones_entrenamiento')
+            ->where('id', $sessionId)
+            ->update([
+                'estado' => $status,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+
+        return [
+            'success' => true,
+            'message' => 'Estado de sesión actualizado correctamente.',
+            'session_id' => $sessionId,
+            'estado' => $status,
+        ];
+    }
+
+    public function createSessionHit(
+        int $sessionId,
+        int $athleteId,
+        int $configurationId,
+        ?string $notasCoach = null,
+        ?string $sensacionAtleta = null
+    ): array {
+
+        $sessionModel = new SesionEntrenamientoModel();
+        $hitModel = new HitEntrenamientoModel();
+
+        $session = $sessionModel->find($sessionId);
+
+        if (!$session) {
+            return [
+                'success' => false,
+                'message' => 'La sesión no existe.',
+            ];
+        }
+
+        if ($session['estado'] !== 'abierta') {
+            return [
+                'success' => false,
+                'message' => 'La sesión no está abierta.',
+            ];
+        }
+
+        $lastHit = $hitModel
+            ->where('sesion_entrenamiento_id', $sessionId)
+            ->orderBy('numero_hit', 'DESC')
+            ->first();
+
+        $nextHitNumber =
+            $lastHit
+                ? ((int)$lastHit['numero_hit']) + 1
+                : 1;
+
+        $hitId = $hitModel->insert([
+            'sesion_entrenamiento_id' => $sessionId,
+            'atleta_id' => $athleteId,
+            'configuracion_bicicleta_id' => $configurationId,
+            'numero_hit' => $nextHitNumber,
+            'notas_coach' => $notasCoach,
+            'sensacion_atleta' => $sensacionAtleta,
+            'created_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Hit creado correctamente.',
+            'hit_id' => $hitId,
+            'numero_hit' => $nextHitNumber,
+            'session_id' => $sessionId,
+            'athlete_id' => $athleteId,
+        ];
+    }
+
+    public function getSessionHits(int $sessionId): array
+    {
+        $summary = $this->getSessionSummary($sessionId);
+
+        if (empty($summary['success'])) {
+            return [
+                'success' => false,
+                'message' => $summary['message'] ?? 'No hay hits para esta sesión.',
+            ];
+        }
+
+        return [
+            'success' => true,
+            'session' => $summary['session'],
+            'hits_count' => $summary['hits_count'],
+            'hits' => $summary['hits'],
+        ];
+    }
+
+    public function getAthletes(): array
+    {
+        $model = new AtletaModel();
+
+        return [
+            'success' => true,
+            'athletes' => $model
+                ->orderBy('nombres', 'ASC')
+                ->findAll(),
+        ];
+    }
+
+    public function getConfigurations(): array
+    {
+        $model = new ConfiguracionBicicletaModel();
+
+        $configs = $model
+            ->select('
+            configuraciones_bicicleta.*,
+            bicicletas.marca,
+            bicicletas.modelo
+        ')
+            ->join(
+                'bicicletas',
+                'bicicletas.id = configuraciones_bicicleta.bicicleta_id'
+            )
+            ->findAll();
+
+        return [
+            'success' => true,
+            'configurations' => $configs,
+        ];
     }
 
 }
