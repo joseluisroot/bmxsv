@@ -19,6 +19,11 @@ class SesionEntrenamientoModel extends Model
         'estado_pista',
         'notas',
         'estado',
+        'modo_hits',
+        'configuracion_bicicleta_default_id',
+        'auto_close_hit',
+        'nodo_inicio_id',
+        'nodo_fin_id',
     ];
 
     protected $useTimestamps = true;
