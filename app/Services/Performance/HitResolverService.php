@@ -8,20 +8,13 @@ use App\Models\HitEntrenamientoModel;
 use App\Models\PuntoControlModel;
 use App\Models\SesionEntrenamientoModel;
 use App\Repositories\Performance\TimingRepository;
-use App\Services\Performance\SequenceValidatorService;
-use App\Services\Performance\TimestampValidatorService;
-use App\Services\Performance\DebounceValidatorService;
-use App\Services\Performance\ValidatorPipelineService;
-use App\Services\Performance\InvalidEventLoggerService;
+use Throwable;
 
 class HitResolverService
 {
     protected TimingRepository $timingRepository;
     protected HitCreatorService $hitCreator;
     protected AttemptResolverService $attemptResolver;
-    protected SequenceValidatorService $sequenceValidator;
-    protected TimestampValidatorService $timestampValidator;
-    protected DebounceValidatorService $debounceValidator;
     protected ValidatorPipelineService $validatorPipeline;
     protected InvalidEventLoggerService $invalidEventLogger;
 
@@ -30,22 +23,15 @@ class HitResolverService
         $this->timingRepository = new TimingRepository();
         $this->hitCreator = new HitCreatorService();
         $this->attemptResolver = new AttemptResolverService();
-        $this->sequenceValidator = new SequenceValidatorService();
-        $this->timestampValidator = new TimestampValidatorService();
-        $this->debounceValidator = new DebounceValidatorService();
         $this->validatorPipeline = new ValidatorPipelineService();
         $this->invalidEventLogger = new InvalidEventLoggerService();
     }
+
     public function resolveAthleteByChip(string $chipCode): ?array
     {
         $chipModel = new ChipIdentificacionModel();
-
         $chip = $chipModel
-            ->select('
-                chips_identificacion.*,
-                atletas.nombres,
-                atletas.apellidos
-            ')
+            ->select('chips_identificacion.*, atletas.nombres, atletas.apellidos')
             ->join('atletas', 'atletas.id = chips_identificacion.atleta_id')
             ->where('chips_identificacion.codigo_chip', $chipCode)
             ->where('chips_identificacion.activo', 1)
@@ -67,9 +53,7 @@ class HitResolverService
 
     public function resolveActiveSession(): ?array
     {
-        $sessionModel = new SesionEntrenamientoModel();
-
-        return $sessionModel
+        return (new SesionEntrenamientoModel())
             ->where('estado', 'abierta')
             ->orderBy('fecha', 'DESC')
             ->orderBy('id', 'DESC')
@@ -78,9 +62,7 @@ class HitResolverService
 
     public function resolveOpenHit(int $sessionId, int $athleteId): ?array
     {
-        $hitModel = new HitEntrenamientoModel();
-
-        return $hitModel
+        return (new HitEntrenamientoModel())
             ->where('sesion_entrenamiento_id', $sessionId)
             ->where('atleta_id', $athleteId)
             ->whereIn('estado', ['pendiente', 'en_progreso'])
@@ -90,55 +72,69 @@ class HitResolverService
 
     public function registerPassByHit(array $payload): array
     {
-        $required = [
-            'device_code',
-            'timing_point_code',
-            'hit_entrenamiento_id',
-            'timestamp_ms',
-        ];
-
-        foreach ($required as $field) {
+        foreach (['device_code', 'timing_point_code', 'hit_entrenamiento_id', 'timestamp_ms'] as $field) {
             if (!isset($payload[$field]) || $payload[$field] === '') {
-                return [
-                    'success' => false,
-                    'status_code' => 400,
-                    'message' => "El campo {$field} es requerido.",
-                ];
+                return ['success' => false, 'status_code' => 400, 'message' => "El campo {$field} es requerido."];
             }
         }
 
-        $hitModel         = new HitEntrenamientoModel();
-        $dispositivoModel = new DispositivoTiempoModel();
+        $hitModel = new HitEntrenamientoModel();
+        $sessionModel = new SesionEntrenamientoModel();
+        $deviceModel = new DispositivoTiempoModel();
+        $pointModel = new PuntoControlModel();
 
-        $hit = $hitModel->find((int)$payload['hit_entrenamiento_id']);
+        $hitId = (int) $payload['hit_entrenamiento_id'];
+        $hit = $hitModel->find($hitId);
 
         if (!$hit) {
-            return [
-                'success' => false,
-                'status_code' => 404,
-                'message' => 'El hit de entrenamiento no existe.',
-            ];
+            return ['success' => false, 'status_code' => 404, 'message' => 'El hit de entrenamiento no existe.'];
         }
 
         if ($hit['estado'] === 'completado') {
+            return ['success' => false, 'status_code' => 409, 'message' => 'Este hit ya está completado. Crea un nuevo hit para una nueva pasada.'];
+        }
+
+        $session = $sessionModel->find((int) $hit['sesion_entrenamiento_id']);
+        if (!$session || ($session['estado'] ?? null) !== 'abierta') {
+            return ['success' => false, 'status_code' => 409, 'message' => 'La sesión asociada al hit no está abierta.'];
+        }
+
+        if (empty($session['nodo_inicio_id']) || empty($session['nodo_fin_id'])) {
+            return ['success' => false, 'status_code' => 409, 'message' => 'La sesión no tiene nodos de inicio y fin configurados.'];
+        }
+
+        $endNode = $pointModel->find((int) $session['nodo_fin_id']);
+        if (!$endNode || empty($endNode['codigo'])) {
+            return ['success' => false, 'status_code' => 409, 'message' => 'El nodo final configurado para la sesión es inválido.'];
+        }
+
+        $eventId = $this->resolveEventId($payload);
+        $existingEvent = $this->timingRepository->findByEventId($eventId);
+        if ($existingEvent) {
             return [
-                'success' => false,
-                'status_code' => 400,
-                'message' => 'Este hit ya está completado. Crea un nuevo hit para una nueva pasada.',
+                'success' => true,
+                'status_code' => 200,
+                'message' => 'Evento ya procesado anteriormente.',
+                'idempotent_replay' => true,
+                'data' => [
+                    'registro_id' => (int) $existingEvent['id'],
+                    'event_id' => $eventId,
+                    'hit_entrenamiento_id' => $hitId,
+                ],
             ];
         }
 
         $validation = $this->validatorPipeline->validate([
-            'hit_id' => (int) $payload['hit_entrenamiento_id'],
+            'hit_id' => $hitId,
             'device_code' => $payload['device_code'],
             'timing_point_code' => $payload['timing_point_code'],
             'timestamp_ms' => (int) $payload['timestamp_ms'],
+            'session' => $session,
         ]);
 
-        if (!$validation['success']) {
-
+        if (empty($validation['success'])) {
+            $payload['event_id'] = $eventId;
             $invalidEventId = $this->invalidEventLogger->log($payload, $validation);
-
             return [
                 'success' => false,
                 'status_code' => 409,
@@ -149,142 +145,130 @@ class HitResolverService
             ];
         }
 
-        $punto = $validation['punto'];
-        $dispositivo = $validation['dispositivo'];
+        $point = $validation['punto'];
+        $device = $validation['dispositivo'];
 
-        if (
-            $this->timingRepository->existsTimingPoint(
-                (int)$payload['hit_entrenamiento_id'],
-                (int)$punto['id']
-            )
-        ) {
-            return [
-                'success' => false,
-                'status_code' => 409,
-                'message' => 'Este punto de control ya fue registrado para este hit.',
+        if ($this->timingRepository->existsTimingPoint($hitId, (int) $point['id'])) {
+            return ['success' => false, 'status_code' => 409, 'message' => 'Este punto de control ya fue registrado para este hit.'];
+        }
+
+        $db = db_connect();
+        $db->transBegin();
+
+        try {
+            $payloadRaw = [
+                'event_id' => $eventId,
+                'device_code' => $payload['device_code'],
+                'timing_point_code' => $payload['timing_point_code'],
+                'chip_code' => $payload['chip_code'] ?? null,
+                'raw_data' => $payload['raw_data'] ?? null,
+                'received_at' => date('Y-m-d H:i:s'),
             ];
-        }
 
-        $payloadRaw = [
-            'device_code'       => $payload['device_code'],
-            'timing_point_code' => $payload['timing_point_code'],
-            'raw_data'          => $payload['raw_data'] ?? null,
-            'received_at'       => date('Y-m-d H:i:s'),
-        ];
+            $registroId = $this->timingRepository->save([
+                'event_id' => $eventId,
+                'hit_entrenamiento_id' => $hitId,
+                'punto_control_id' => (int) $point['id'],
+                'dispositivo_tiempo_id' => (int) $device['id'],
+                'timestamp_ms' => (int) $payload['timestamp_ms'],
+                'payload_raw' => json_encode($payloadRaw),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
 
-        $registroId = $this->timingRepository->save([
-            'hit_entrenamiento_id'  => (int)$payload['hit_entrenamiento_id'],
-            'punto_control_id'      => (int)$punto['id'],
-            'dispositivo_tiempo_id' => (int)$dispositivo['id'],
-            'timestamp_ms'          => (int)$payload['timestamp_ms'],
-            'payload_raw'           => json_encode($payloadRaw),
-            'created_at'            => date('Y-m-d H:i:s'),
-        ]);
+            $deviceModel->update((int) $device['id'], ['ultima_conexion' => date('Y-m-d H:i:s')]);
 
-        $dispositivoModel->update($dispositivo['id'], [
-            'ultima_conexion' => date('Y-m-d H:i:s'),
-        ]);
-
-        if ($hit['estado'] === 'pendiente') {
-            $hitModel->update((int)$payload['hit_entrenamiento_id'], [
-                'estado' => 'en_progreso',
+            $newState = $point['codigo'] === $endNode['codigo'] ? 'completado' : 'en_progreso';
+            $hitModel->update($hitId, [
+                'estado' => $newState,
                 'updated_at' => date('Y-m-d H:i:s'),
             ]);
+
+            if (!$db->transStatus()) {
+                throw new \RuntimeException('La transacción de timing no pudo completarse.');
+            }
+
+            $db->transCommit();
+
+            return [
+                'success' => true,
+                'status_code' => 201,
+                'message' => 'Registro de tiempo guardado correctamente.',
+                'data' => [
+                    'registro_id' => $registroId,
+                    'event_id' => $eventId,
+                    'hit_entrenamiento_id' => $hitId,
+                    'punto_control' => $point['codigo'],
+                    'dispositivo' => $device['codigo_dispositivo'],
+                    'timestamp_ms' => (int) $payload['timestamp_ms'],
+                    'hit_estado' => $newState,
+                ],
+            ];
+        } catch (Throwable $e) {
+            $db->transRollback();
+
+            $existingEvent = $this->timingRepository->findByEventId($eventId);
+            if ($existingEvent) {
+                return [
+                    'success' => true,
+                    'status_code' => 200,
+                    'message' => 'Evento ya procesado anteriormente.',
+                    'idempotent_replay' => true,
+                    'data' => ['registro_id' => (int) $existingEvent['id'], 'event_id' => $eventId, 'hit_entrenamiento_id' => $hitId],
+                ];
+            }
+
+            return ['success' => false, 'status_code' => 500, 'message' => 'No se pudo persistir el evento de timing de forma segura.'];
         }
-
-        $sessionModel = new SesionEntrenamientoModel();
-        $puntoControlModel = new PuntoControlModel();
-
-        $session = $sessionModel->find($hit['sesion_entrenamiento_id']);
-
-        $endNode = $puntoControlModel->find($session['nodo_fin_id']);
-
-        if ($punto['codigo'] === $endNode['codigo']) {
-            $hitModel->update((int)$payload['hit_entrenamiento_id'], [
-                'estado' => 'completado',
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
-        }
-
-        return [
-            'success' => true,
-            'status_code' => 201,
-            'message' => 'Registro de tiempo guardado correctamente.',
-            'data' => [
-                'registro_id' => $registroId,
-                'hit_entrenamiento_id' => (int)$payload['hit_entrenamiento_id'],
-                'punto_control' => $punto['codigo'],
-                'dispositivo' => $dispositivo['codigo_dispositivo'],
-                'timestamp_ms' => (int)$payload['timestamp_ms'],
-                'hit_estado' => $punto['codigo'] === 'TP06' ? 'completado' : 'en_progreso',
-            ],
-        ];
     }
 
     public function registerPassByChip(array $payload): array
     {
-        $required = [
-            'device_code',
-            'timing_point_code',
-            'chip_code',
-            'timestamp_ms',
-        ];
-
-        foreach ($required as $field) {
+        foreach (['device_code', 'timing_point_code', 'chip_code', 'timestamp_ms'] as $field) {
             if (!isset($payload[$field]) || $payload[$field] === '') {
-                return [
-                    'success' => false,
-                    'status_code' => 400,
-                    'message' => "El campo {$field} es requerido.",
-                ];
+                return ['success' => false, 'status_code' => 400, 'message' => "El campo {$field} es requerido."];
             }
         }
 
-        $chipData = $this->resolveAthleteByChip($payload['chip_code']);
-
+        $chipData = $this->resolveAthleteByChip((string) $payload['chip_code']);
         if (!$chipData) {
-            return [
-                'success' => false,
-                'status_code' => 404,
-                'message' => 'Chip no encontrado o inactivo.',
-            ];
+            return ['success' => false, 'status_code' => 404, 'message' => 'Chip no encontrado o inactivo.'];
         }
 
         $session = $this->resolveActiveSession();
-
         if (!$session) {
-            return [
-                'success' => false,
-                'status_code' => 404,
-                'message' => 'No hay sesión activa abierta.',
-            ];
+            return ['success' => false, 'status_code' => 404, 'message' => 'No hay sesión activa abierta.'];
         }
 
-        $attempt = $this->attemptResolver->resolve(
-            $session,
-            $chipData['athlete'],
-            $payload['timing_point_code']
-        );
-
-        if (!$attempt['success']) {
-            return [
-                'success' => false,
-                'status_code' => 400,
-                'message' => $attempt['message'],
-                'details' => $attempt,
-            ];
+        $attempt = $this->attemptResolver->resolve($session, $chipData['athlete'], (string) $payload['timing_point_code']);
+        if (empty($attempt['success'])) {
+            return ['success' => false, 'status_code' => 400, 'message' => $attempt['message'], 'details' => $attempt];
         }
 
         $payload['hit_entrenamiento_id'] = $attempt['hit']['id'];
-
         $result = $this->registerPassByHit($payload);
 
         if (!empty($result['success'])) {
             $result['data']['chip_code'] = $payload['chip_code'];
             $result['data']['athlete'] = $chipData['athlete'];
             $result['data']['session_id'] = (int) $session['id'];
+            $result['data']['hit_created_automatically'] = !empty($attempt['created']);
         }
 
         return $result;
+    }
+
+    private function resolveEventId(array $payload): string
+    {
+        if (!empty($payload['event_id'])) {
+            return substr((string) $payload['event_id'], 0, 64);
+        }
+
+        return hash('sha256', implode('|', [
+            (string) ($payload['device_code'] ?? ''),
+            (string) ($payload['chip_code'] ?? ''),
+            (string) ($payload['hit_entrenamiento_id'] ?? ''),
+            (string) ($payload['timing_point_code'] ?? ''),
+            (string) ($payload['timestamp_ms'] ?? ''),
+        ]));
     }
 }

@@ -8,7 +8,6 @@ use App\Models\PuntoControlModel;
 class AttemptResolverService
 {
     protected HitEntrenamientoModel $hitModel;
-
     protected HitCreatorService $hitCreator;
 
     public function __construct()
@@ -17,28 +16,17 @@ class AttemptResolverService
         $this->hitCreator = new HitCreatorService();
     }
 
-    public function resolve(
-        array  $session,
-        array  $athlete,
-        string $timingPoint
-    ): array
+    public function resolve(array $session, array $athlete, string $timingPoint): array
     {
         $hit = $this->hitModel
             ->where('sesion_entrenamiento_id', $session['id'])
             ->where('atleta_id', $athlete['id'])
-            ->whereIn('estado', [
-                'pendiente',
-                'en_progreso'
-            ])
-            ->orderBy('numero_hit', 'ASC')
+            ->whereIn('estado', ['pendiente', 'en_progreso'])
+            ->orderBy('numero_hit', 'DESC')
             ->first();
 
         if ($hit) {
-            return [
-                'success' => true,
-                'hit' => $hit,
-                'created' => false
-            ];
+            return ['success' => true, 'hit' => $hit, 'created' => false];
         }
 
         if (($session['modo_hits'] ?? 'manual') !== 'automatico') {
@@ -49,45 +37,32 @@ class AttemptResolverService
             ];
         }
 
-        $startNode = new PuntoControlModel();
-
-        $startNode = $startNode->find($session['nodo_inicio_id']);
-
-        if (!$startNode || empty($startNode['codigo'])) {
-            return [
-                'success' => false,
-                'message' => 'La sesión no tiene nodo inicial válido.'
-            ];
-
+        if (empty($session['nodo_inicio_id'])) {
+            return ['success' => false, 'message' => 'La sesión no tiene nodo inicial configurado.'];
         }
 
-        if ($timingPoint !== $startNode['codigo'])
-        {
+        $startNode = (new PuntoControlModel())->find((int) $session['nodo_inicio_id']);
+
+        if (!$startNode || empty($startNode['codigo'])) {
+            return ['success' => false, 'message' => 'La sesión no tiene nodo inicial válido.'];
+        }
+
+        if ($timingPoint !== $startNode['codigo']) {
             return [
                 'success' => false,
                 'message' => 'Solo el nodo inicial puede crear un nuevo hit.',
                 'expected' => $startNode['codigo'],
-                'received' => $timingPoint
+                'received' => $timingPoint,
             ];
         }
 
-        $created = $this->hitCreator
-            ->createAutomaticHit(
-                $session,
-                $athlete['id']
-            );
-
-        if (!$created['success']) {
+        $created = $this->hitCreator->createAutomaticHit($session, (int) $athlete['id']);
+        if (empty($created['success'])) {
             return $created;
         }
 
-        $hit = $this->hitModel
-            ->find($created['hit_id']);
+        $hit = $this->hitModel->find((int) $created['hit_id']);
 
-        return [
-            'success' => true,
-            'hit' => $hit,
-            'created' => true
-        ];
+        return ['success' => true, 'hit' => $hit, 'created' => true];
     }
 }
