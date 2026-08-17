@@ -8,6 +8,34 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .btps-swal-popup {
+            border: 1px solid #1e293b !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 24px 80px rgba(2, 6, 23, .55) !important;
+        }
+        .btps-swal-title {
+            font-size: 1.15rem !important;
+            font-weight: 700 !important;
+            letter-spacing: -.01em !important;
+        }
+        .btps-swal-text {
+            color: #94a3b8 !important;
+            font-size: .925rem !important;
+        }
+        .btps-swal-confirm,
+        .btps-swal-cancel {
+            border-radius: .65rem !important;
+            padding: .65rem 1rem !important;
+            font-weight: 700 !important;
+            box-shadow: none !important;
+        }
+        .swal2-timer-progress-bar {
+            background: #06b6d4 !important;
+        }
+    </style>
+    <script src="<?= base_url('assets/js/performance/btps-alerts.js') ?>"></script>
 </head>
 
 <body class="bg-slate-950 text-white">
