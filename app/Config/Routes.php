@@ -72,6 +72,8 @@ $routes->group('api', static function ($routes) {
     $routes->post('hardware/btns', 'Api\HardwareController::saveBtn');
     $routes->put('hardware/btns/(:num)', 'Api\HardwareController::saveBtn/$1');
     $routes->post('hardware/btns/(:num)/health', 'Api\HardwareController::btnHealth/$1');
+    $routes->get('hardware/btns/(:segment)/configuration', 'Api\HardwareController::btnConfiguration/$1');
+    $routes->post('hardware/btns/(:segment)/telemetry', 'Api\HardwareController::btnTelemetry/$1');
 });
 
 $routes->get('performance/atleta/(:num)', 'PerformanceController::atleta/$1');
