@@ -70,7 +70,6 @@ function renderAats() {
 
 document.getElementById('aatForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const message = document.getElementById('aatMessage');
     const payload = {
         uid: document.getElementById('uid').value.trim(),
         serial_number: document.getElementById('serialNumber').value.trim() || null,
@@ -80,13 +79,26 @@ document.getElementById('aatForm').addEventListener('submit', async e => {
         notes: document.getElementById('aatNotes').value.trim() || null,
     };
 
-    const response = await fetch('/api/hardware/aats', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
-    const data = await response.json();
-    message.textContent = data.message ?? '';
-    message.className = `text-sm ${data.success ? 'text-green-400' : 'text-red-400'}`;
-    if (data.success) {
+    try {
+        BTPSAlerts.loading('Registrando AAT', 'Guardando el dispositivo en el inventario BTPS.');
+        const response = await fetch('/api/hardware/aats', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        BTPSAlerts.close();
+
+        if (!data.success) {
+            return BTPSAlerts.error('No se pudo registrar el AAT', data.message ?? 'Revisa los datos e inténtalo nuevamente.');
+        }
+
         e.target.reset();
         await loadAats();
+        BTPSAlerts.success('AAT registrado', `${payload.uid} ya está disponible en el inventario.`);
+    } catch (error) {
+        BTPSAlerts.close();
+        BTPSAlerts.error('Error de conexión', 'No fue posible comunicarse con BTPS.');
     }
 });
 
@@ -107,31 +119,114 @@ function closeAssignModal() {
 
 async function submitAssignment() {
     const id = document.getElementById('assignAatId').value;
+    const aat = aats.find(a => Number(a.id) === Number(id));
+    const athleteSelect = document.getElementById('assignAthlete');
+    const athleteName = athleteSelect.options[athleteSelect.selectedIndex]?.text ?? 'el atleta';
     const payload = {
-        athlete_id: Number(document.getElementById('assignAthlete').value),
+        athlete_id: Number(athleteSelect.value),
         assignment_type: document.getElementById('assignmentType').value,
         session_id: document.getElementById('assignmentSession').value || null,
     };
-    const response = await fetch(`/api/hardware/aats/${id}/assign`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
-    const data = await response.json();
-    if (!data.success) return alert(data.message ?? 'No se pudo asignar.');
-    closeAssignModal();
-    await loadAats();
+
+    if (!payload.athlete_id) {
+        return BTPSAlerts.error('Selecciona un atleta', 'Debes elegir a quién se asignará este AAT.');
+    }
+
+    try {
+        BTPSAlerts.loading('Asignando AAT', `Vinculando ${aat?.uid ?? 'el dispositivo'} con ${athleteName}.`);
+        const response = await fetch(`/api/hardware/aats/${id}/assign`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        BTPSAlerts.close();
+
+        if (!data.success) {
+            return BTPSAlerts.error('No se pudo asignar', data.message ?? 'Verifica el estado del AAT.');
+        }
+
+        closeAssignModal();
+        await loadAats();
+        BTPSAlerts.success('AAT asignado', `${aat?.uid ?? 'El AAT'} quedó asociado a ${athleteName}.`);
+    } catch (error) {
+        BTPSAlerts.close();
+        BTPSAlerts.error('Error de conexión', 'No fue posible completar la asignación.');
+    }
 }
 
 async function returnAat(id) {
-    if (!confirm('¿Registrar devolución de este AAT?')) return;
-    const response = await fetch(`/api/hardware/aats/${id}/return`, {method: 'POST'});
-    const data = await response.json();
-    if (!data.success) return alert(data.message ?? 'No se pudo devolver.');
-    await loadAats();
+    const aat = aats.find(a => Number(a.id) === Number(id));
+    const currentAthlete = aat?.assigned_athlete_id
+        ? `${aat.assigned_nombres ?? ''} ${aat.assigned_apellidos ?? ''}`.trim()
+        : 'el atleta actual';
+
+    const confirmation = await BTPSAlerts.confirm({
+        title: 'Registrar devolución',
+        text: `${aat?.uid ?? 'Este AAT'} dejará de estar asignado a ${currentAthlete} y volverá al inventario disponible.`,
+        confirmText: 'Sí, devolver',
+        cancelText: 'Mantener asignado',
+        icon: 'question',
+        danger: true
+    });
+
+    if (!confirmation.isConfirmed) return;
+
+    try {
+        BTPSAlerts.loading('Procesando devolución', 'Actualizando inventario e historial del AAT.');
+        const response = await fetch(`/api/hardware/aats/${id}/return`, {method: 'POST'});
+        const data = await response.json();
+        BTPSAlerts.close();
+
+        if (!data.success) {
+            return BTPSAlerts.error('No se pudo devolver el AAT', data.message ?? 'Inténtalo nuevamente.');
+        }
+
+        await loadAats();
+        BTPSAlerts.success('AAT disponible', `${aat?.uid ?? 'El dispositivo'} regresó correctamente al inventario.`);
+    } catch (error) {
+        BTPSAlerts.close();
+        BTPSAlerts.error('Error de conexión', 'No fue posible registrar la devolución.');
+    }
 }
 
 async function showHistory(id) {
-    const response = await fetch(`/api/hardware/aats/${id}/history`);
-    const data = await response.json();
-    const lines = (data.history ?? []).map(h => `${h.starts_at} · ${h.nombres} ${h.apellidos} · ${h.assignment_type}${h.returned_at ? ` · devuelto ${h.returned_at}` : ' · activo'}`);
-    alert(lines.length ? lines.join('\n') : 'Sin historial de asignaciones.');
+    const aat = aats.find(a => Number(a.id) === Number(id));
+
+    try {
+        BTPSAlerts.loading('Cargando historial', 'Consultando asignaciones anteriores.');
+        const response = await fetch(`/api/hardware/aats/${id}/history`);
+        const data = await response.json();
+        BTPSAlerts.close();
+
+        if (!data.success) {
+            return BTPSAlerts.error('No se pudo cargar el historial', data.message ?? 'Inténtalo nuevamente.');
+        }
+
+        const history = data.history ?? [];
+        if (!history.length) {
+            return BTPSAlerts.info(`Historial · ${aat?.uid ?? 'AAT'}`, '<p class="text-slate-400">Este AAT todavía no registra asignaciones.</p>');
+        }
+
+        const rows = history.map(h => {
+            const athlete = `${h.nombres ?? ''} ${h.apellidos ?? ''}`.trim();
+            const state = h.returned_at ? `Devuelto ${h.returned_at}` : 'Asignación activa';
+            const session = h.session_name ? `<div style="color:#64748b;font-size:12px;margin-top:4px">Sesión: ${h.session_name}</div>` : '';
+            return `<div style="padding:12px 0;border-bottom:1px solid #1e293b;text-align:left">
+                <div style="font-weight:700;color:#f8fafc">${athlete}</div>
+                <div style="color:#94a3b8;font-size:13px;margin-top:3px">${h.assignment_type} · ${h.starts_at}</div>
+                <div style="color:${h.returned_at ? '#94a3b8' : '#22d3ee'};font-size:12px;margin-top:4px">${state}</div>
+                ${session}
+            </div>`;
+        }).join('');
+
+        BTPSAlerts.info(`Historial · ${aat?.uid ?? 'AAT'}`, `<div style="max-height:420px;overflow:auto;padding-right:6px">${rows}</div>`);
+    } catch (error) {
+        BTPSAlerts.close();
+        BTPSAlerts.error('Error de conexión', 'No fue posible recuperar el historial del AAT.');
+    }
 }
 
-loadReferenceData().then(loadAats).catch(console.error);
+loadReferenceData().then(loadAats).catch(() => {
+    BTPSAlerts.error('No se pudo cargar AAT Manager', 'Revisa la conexión con el servidor BTPS.');
+});
