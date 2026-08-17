@@ -61,6 +61,17 @@ $routes->group('api', static function ($routes) {
     $routes->post('performance/sessions', 'Api\SessionController::create');
     $routes->put('performance/sessions/(:num)', 'Api\SessionController::update/$1');
     $routes->post('performance/sessions/(:num)/status', 'Api\SessionController::status/$1');
+
+    $routes->get('hardware/aats', 'Api\HardwareController::aats');
+    $routes->post('hardware/aats', 'Api\HardwareController::createAat');
+    $routes->post('hardware/aats/(:num)/assign', 'Api\HardwareController::assignAat/$1');
+    $routes->post('hardware/aats/(:num)/return', 'Api\HardwareController::returnAat/$1');
+    $routes->get('hardware/aats/(:num)/history', 'Api\HardwareController::aatHistory/$1');
+
+    $routes->get('hardware/btns', 'Api\HardwareController::btns');
+    $routes->post('hardware/btns', 'Api\HardwareController::saveBtn');
+    $routes->put('hardware/btns/(:num)', 'Api\HardwareController::saveBtn/$1');
+    $routes->post('hardware/btns/(:num)/health', 'Api\HardwareController::btnHealth/$1');
 });
 
 $routes->get('performance/atleta/(:num)', 'PerformanceController::atleta/$1');
@@ -70,5 +81,7 @@ $routes->get('performance/hit/(:num)/compare/(:num)', 'PerformanceController::co
 $routes->get('performance/athlete/(:num)/compare/(:num)','PerformanceController::compareAthletes/$1/$2');
 $routes->get('performance/club/ranking', 'PerformanceController::clubRanking');
 $routes->get('performance/sessions', 'PerformanceController::sessions');
+$routes->get('performance/hardware/aats', 'PerformanceController::aatManager');
+$routes->get('performance/hardware/btns', 'PerformanceController::btnManager');
 $routes->get('performance/session/(:num)/control','PerformanceController::sessionControl/$1');
 $routes->get('performance/session/(:num)/simulator','PerformanceController::sessionSimulator/$1');
