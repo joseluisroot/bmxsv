@@ -69,6 +69,22 @@ class PerformanceController extends BaseController
         ]);
     }
 
+    public function aatManager()
+    {
+        return view('performance/aat_manager', [
+            'title' => 'BTPS AAT Manager',
+            'pageTitle' => 'BTPS AAT Manager',
+        ]);
+    }
+
+    public function btnManager()
+    {
+        return view('performance/btn_manager', [
+            'title' => 'BTPS BTN Manager',
+            'pageTitle' => 'BTPS BTN Manager',
+        ]);
+    }
+
     public function sessionControl($sessionId)
     {
         return view('Performance/session_control', [
