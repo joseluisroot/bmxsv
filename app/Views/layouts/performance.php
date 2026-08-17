@@ -18,29 +18,24 @@
         <div class="p-6 border-b border-slate-800">
             <p class="text-cyan-400 text-xs font-bold">BMXSV</p>
             <h1 class="text-xl font-bold">BTPS</h1>
-            <p class="text-slate-400 text-xs mt-1">
-                BMX Timing & Performance System
-            </p>
+            <p class="text-slate-400 text-xs mt-1">BMX Timing & Performance System</p>
         </div>
 
         <nav class="p-4 space-y-2 text-sm">
-            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-slate-800">Dashboard</a>
-            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-slate-800">Atletas</a>
-            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-slate-800">Sesiones</a>
-            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-slate-800">Rankings</a>
-            <a href="#" class="block px-4 py-3 rounded-lg hover:bg-slate-800">Coach Live</a>
+            <a href="<?= base_url('performance/sessions') ?>" class="block px-4 py-3 rounded-lg hover:bg-slate-800">Sesiones</a>
+            <a href="<?= base_url('performance/club/ranking') ?>" class="block px-4 py-3 rounded-lg hover:bg-slate-800">Rankings</a>
+            <div class="pt-3 mt-3 border-t border-slate-800">
+                <p class="px-4 pb-2 text-[11px] uppercase tracking-wider text-slate-500">Hardware</p>
+                <a href="<?= base_url('performance/hardware/aats') ?>" class="block px-4 py-3 rounded-lg hover:bg-slate-800">AAT Manager</a>
+                <a href="<?= base_url('performance/hardware/btns') ?>" class="block px-4 py-3 rounded-lg hover:bg-slate-800">BTN / Device Manager</a>
+            </div>
         </nav>
     </aside>
 
     <main class="flex-1 min-w-0">
         <header class="h-16 border-b border-slate-800 flex items-center justify-between px-6">
-            <h2 class="font-bold text-lg">
-                <?= esc($pageTitle ?? 'BTPS') ?>
-            </h2>
-
-            <div class="text-sm text-slate-400">
-                <?= date('d/m/Y') ?>
-            </div>
+            <h2 class="font-bold text-lg"><?= esc($pageTitle ?? 'BTPS') ?></h2>
+            <div class="text-sm text-slate-400"><?= date('d/m/Y') ?></div>
         </header>
 
         <section class="p-6 max-w-7xl mx-auto">
