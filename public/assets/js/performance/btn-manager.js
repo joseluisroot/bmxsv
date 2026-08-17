@@ -59,6 +59,7 @@ function editBtn(id) {
     document.getElementById('btnNotes').value = d.notes ?? '';
     document.getElementById('btnFormTitle').textContent = `Editar ${d.codigo_dispositivo}`;
     window.scrollTo({top: 0, behavior: 'smooth'});
+    BTPSAlerts.success('Modo edición', `${d.codigo_dispositivo} está listo para actualizarse.`);
 }
 
 function resetBtnForm() {
@@ -84,19 +85,34 @@ document.getElementById('btnForm').addEventListener('submit', async e => {
         notes: document.getElementById('btnNotes').value.trim() || null,
     };
 
-    const response = await fetch(id ? `/api/hardware/btns/${id}` : '/api/hardware/btns', {
-        method: id ? 'PUT' : 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload),
-    });
-    const data = await response.json();
-    const message = document.getElementById('btnMessage');
-    message.textContent = data.message ?? '';
-    message.className = `text-sm ${data.success ? 'text-green-400' : 'text-red-400'}`;
-    if (data.success) {
+    if (!payload.codigo_dispositivo || !payload.punto_control_id) {
+        return BTPSAlerts.error('Información incompleta', 'Código de dispositivo y punto de control son obligatorios.');
+    }
+
+    try {
+        BTPSAlerts.loading(id ? 'Actualizando BTN' : 'Registrando BTN', 'Guardando configuración de hardware y red.');
+        const response = await fetch(id ? `/api/hardware/btns/${id}` : '/api/hardware/btns', {
+            method: id ? 'PUT' : 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        BTPSAlerts.close();
+
+        if (!data.success) {
+            return BTPSAlerts.error(id ? 'No se pudo actualizar el BTN' : 'No se pudo registrar el BTN', data.message ?? 'Revisa los datos e inténtalo nuevamente.');
+        }
+
+        const deviceCode = payload.codigo_dispositivo;
         resetBtnForm();
         await loadBtns();
+        BTPSAlerts.success(id ? 'BTN actualizado' : 'BTN registrado', `${deviceCode} quedó guardado correctamente.`);
+    } catch (error) {
+        BTPSAlerts.close();
+        BTPSAlerts.error('Error de conexión', 'No fue posible comunicarse con BTPS para guardar el nodo.');
     }
 });
 
-Promise.all([loadTimingPoints(), loadBtns()]).catch(console.error);
+Promise.all([loadTimingPoints(), loadBtns()]).catch(() => {
+    BTPSAlerts.error('No se pudo cargar Device Manager', 'Revisa la conexión con el servidor BTPS.');
+});
