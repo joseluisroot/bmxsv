@@ -5,6 +5,7 @@ namespace App\Services\Performance;
 use App\Models\AatAssignmentModel;
 use App\Models\AatDeviceModel;
 use App\Models\AtletaModel;
+use App\Models\ChipIdentificacionModel;
 use App\Models\DispositivoTiempoModel;
 use App\Models\PuntoControlModel;
 use Config\Database;
@@ -76,6 +77,7 @@ class HardwareManagerService
         $now = date('Y-m-d H:i:s');
         $db = Database::connect();
         $db->transStart();
+
         $assignmentId = $assignments->insert([
             'aat_device_id' => $aatId,
             'atleta_id' => $athleteId,
@@ -88,14 +90,24 @@ class HardwareManagerService
             'created_at' => $now,
             'updated_at' => $now,
         ]);
-        (new AatDeviceModel())->update($aatId, ['status' => $type === 'permanent' ? 'assigned' : 'loaned', 'updated_at' => $now]);
+
+        (new AatDeviceModel())->update($aatId, [
+            'status' => $type === 'permanent' ? 'assigned' : 'loaned',
+            'updated_at' => $now,
+        ]);
+
+        $this->syncLegacyChipAssignment((string)$device['uid'], $athleteId, true);
         $db->transComplete();
 
-        return ['success' => $db->transStatus(), 'message' => 'AAT asignado correctamente.', 'assignment_id' => $assignmentId];
+        return ['success' => $db->transStatus(), 'message' => 'AAT asignado correctamente y habilitado para timing.', 'assignment_id' => $assignmentId];
     }
 
     public function returnAat(int $aatId): array
     {
+        $deviceModel = new AatDeviceModel();
+        $device = $deviceModel->find($aatId);
+        if (!$device) return ['success' => false, 'message' => 'AAT no encontrado.'];
+
         $assignmentModel = new AatAssignmentModel();
         $assignment = $assignmentModel->where('aat_device_id', $aatId)->where('active', 1)->first();
         if (!$assignment) return ['success' => false, 'message' => 'El AAT no tiene una asignación activa.'];
@@ -104,10 +116,11 @@ class HardwareManagerService
         $db = Database::connect();
         $db->transStart();
         $assignmentModel->update((int)$assignment['id'], ['active' => 0, 'returned_at' => $now, 'updated_at' => $now]);
-        (new AatDeviceModel())->update($aatId, ['status' => 'available', 'updated_at' => $now]);
+        $deviceModel->update($aatId, ['status' => 'available', 'updated_at' => $now]);
+        $this->syncLegacyChipAssignment((string)$device['uid'], (int)$assignment['atleta_id'], false);
         $db->transComplete();
 
-        return ['success' => $db->transStatus(), 'message' => 'AAT devuelto y disponible.'];
+        return ['success' => $db->transStatus(), 'message' => 'AAT devuelto, disponible y deshabilitado para el atleta anterior.'];
     }
 
     public function aatHistory(int $aatId): array
@@ -152,13 +165,16 @@ class HardwareManagerService
         }
         if (!(new PuntoControlModel())->find((int)$payload['punto_control_id'])) return ['success' => false, 'message' => 'Punto de control inválido.'];
 
+        $networkMode = $payload['network_mode'] ?? 'local';
+        if (!in_array($networkMode, ['local', 'cloud', 'auto'], true)) return ['success' => false, 'message' => 'Modo de red inválido.'];
+
         $model = new DispositivoTiempoModel();
         $data = [
             'codigo_dispositivo' => trim((string)$payload['codigo_dispositivo']),
             'punto_control_id' => (int)$payload['punto_control_id'],
             'tipo_dispositivo' => $payload['tipo_dispositivo'] ?? 'BTPS_BTN',
             'tipo_sensor' => $payload['tipo_sensor'] ?? 'AAT_LF_RF',
-            'network_mode' => $payload['network_mode'] ?? 'local',
+            'network_mode' => $networkMode,
             'endpoint_url' => $payload['endpoint_url'] ?? null,
             'ip_address' => $payload['ip_address'] ?? null,
             'firmware_version' => $payload['firmware_version'] ?? null,
@@ -168,7 +184,14 @@ class HardwareManagerService
             'activo' => isset($payload['activo']) ? (int)(bool)$payload['activo'] : 1,
         ];
 
-        if ($id) $model->update($id, $data); else $id = (int)$model->insert($data);
+        if ($id) {
+            if (!$model->find($id)) return ['success' => false, 'message' => 'BTN no encontrado.'];
+            $model->update($id, $data);
+        } else {
+            if ($model->where('codigo_dispositivo', $data['codigo_dispositivo'])->first()) return ['success' => false, 'message' => 'El código de BTN ya existe.'];
+            $id = (int)$model->insert($data);
+        }
+
         return ['success' => true, 'message' => 'BTN guardado correctamente.', 'device_id' => $id];
     }
 
@@ -181,5 +204,28 @@ class HardwareManagerService
         if (!$data) return ['success' => false, 'message' => 'No hay datos de diagnóstico para actualizar.'];
         $model->update($id, $data);
         return ['success' => true, 'message' => 'Estado BTN actualizado.'];
+    }
+
+    private function syncLegacyChipAssignment(string $uid, int $athleteId, bool $active): void
+    {
+        $model = new ChipIdentificacionModel();
+        $chip = $model->where('codigo_chip', $uid)->first();
+        $now = date('Y-m-d H:i:s');
+        $data = [
+            'atleta_id' => $athleteId,
+            'tipo' => 'BTPS_AAT',
+            'activo' => $active ? 1 : 0,
+            'notas' => 'Sincronizado automáticamente por BTPS AAT Manager.',
+            'updated_at' => $now,
+        ];
+
+        if ($chip) {
+            $model->update((int)$chip['id'], $data);
+            return;
+        }
+
+        $data['codigo_chip'] = $uid;
+        $data['created_at'] = $now;
+        $model->insert($data);
     }
 }
