@@ -56,4 +56,16 @@ class HardwareController extends BaseController
         $data = $this->service()->updateBtnHealth((int)$id, $this->request->getJSON(true) ?? []);
         return $this->response->setStatusCode($data['success'] ? 200 : 400)->setJSON($data);
     }
+
+    public function btnConfiguration($deviceCode)
+    {
+        $data = $this->service()->btnConfiguration((string)$deviceCode);
+        return $this->response->setStatusCode($data['success'] ? 200 : 404)->setJSON($data);
+    }
+
+    public function btnTelemetry($deviceCode)
+    {
+        $data = $this->service()->updateBtnTelemetryByCode((string)$deviceCode, $this->request->getJSON(true) ?? []);
+        return $this->response->setStatusCode($data['success'] ? 200 : 404)->setJSON($data);
+    }
 }
